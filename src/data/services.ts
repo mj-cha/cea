@@ -18,9 +18,9 @@ export type Service = {
   details: Detail[];
 };
 
-
 import { envServices } from "./services-env";
+import { climateServices } from "./services-climate";
 import { socialServices } from "./services-social";
 
-export const services: Service[] = [...envServices, ...socialServices];
+export const services: Service[] = [...envServices, ...climateServices, ...socialServices];
 export const totalSubServices = services.reduce((n, s) => n + s.areas.length, 0);

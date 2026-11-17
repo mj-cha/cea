@@ -16,7 +16,7 @@ const levelTone: Record<string, string> = {
 
 export function Education() {
   const [filter, setFilter] = useState("전체");
-  const { select } = useService();
+  const { select, requestConsult } = useService();
   const list = filter === "전체" ? courses : courses.filter((c) => c.level === filter);
   const serviceName = (id: string) => services.find((s) => s.id === id)?.title ?? "";
 
@@ -25,7 +25,7 @@ export function Education() {
       <div className="container">
         <div className="mb-10 grid gap-6 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-end md:gap-16">
           <div>
-            <p className="mb-4 text-[13px] font-semibold text-primary">ONLINE ACADEMY</p>
+            <p className="mb-4 text-[13px] font-semibold text-primary">실무 온라인 아카데미</p>
             <h2 className="text-[32px] leading-tight font-extrabold tracking-[-0.03em] md:text-[44px]">
               온라인 교육으로
               <br />
@@ -56,9 +56,13 @@ export function Education() {
               <CardHeader className="px-6 pt-6 pb-4">
                 <div className="mb-3 flex items-center justify-between">
                   <span className={cn("rounded-full px-2.5 py-0.5 text-[12px] font-bold", levelTone[c.level])}>{c.level}</span>
-                  <span className="grid size-8 place-items-center rounded-full bg-muted text-muted-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                  <a
+                    href="#lms"
+                    aria-label={`${c.title} 강의실 열기`}
+                    className="grid size-8 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground group-hover:bg-primary group-hover:text-primary-foreground"
+                  >
                     <Play className="size-3.5" />
-                  </span>
+                  </a>
                 </div>
                 <CardTitle className="text-[17px] leading-snug font-bold">{c.title}</CardTitle>
                 <CardDescription className="mt-1 text-[13px] leading-relaxed">{c.desc}</CardDescription>
@@ -73,20 +77,29 @@ export function Education() {
                   ))}
                 </ul>
               </CardContent>
-              <CardFooter className="flex-col items-start gap-3 border-t bg-muted/30 px-6 py-4">
-                <p className="text-[12px] text-muted-foreground">{c.format}</p>
+              <CardFooter className="flex-col items-start gap-2.5 border-t bg-muted/30 px-6 py-4">
+                <p className="text-[12px] font-medium text-foreground/85">{c.format}</p>
                 <p className="text-[12px] leading-relaxed text-muted-foreground">대상 · {c.audience}</p>
-                <a
-                  href="#services"
-                  onClick={() => select(c.service)}
-                  className="inline-flex items-center gap-1 text-[13px] font-semibold text-foreground transition-colors hover:text-primary"
-                >
-                  <Badge variant="outline" className="mr-1 px-2 py-0 text-[11px]">
-                    연계
-                  </Badge>
-                  {serviceName(c.service)}
-                  <ArrowRight className="size-3.5" />
-                </a>
+                <div className="mt-1 flex w-full flex-wrap items-center justify-between gap-2 pt-1">
+                  <a
+                    href="#services"
+                    onClick={() => select(c.service)}
+                    className="inline-flex items-center gap-1 text-[12px] font-semibold text-foreground transition-colors hover:text-primary"
+                  >
+                    <Badge variant="outline" className="mr-1 px-1.5 py-0 text-[10px]">
+                      연계
+                    </Badge>
+                    {serviceName(c.service)}
+                  </a>
+                  <a
+                    href="#contact"
+                    onClick={() => requestConsult("온라인 교육")}
+                    className="inline-flex items-center gap-1 text-[12px] font-bold text-primary hover:underline"
+                  >
+                    수강 문의
+                    <ArrowRight className="size-3" />
+                  </a>
+                </div>
               </CardFooter>
             </Card>
           ))}
@@ -94,8 +107,12 @@ export function Education() {
 
         <p className="mt-8 text-[13px] text-muted-foreground">
           임직원 전체 교육이나 사내 맞춤 과정이 필요하면{" "}
-          <a href="#contact" className="font-semibold text-foreground underline underline-offset-4">
-            기업 교육 문의
+          <a
+            href="#contact"
+            onClick={() => requestConsult("기업 단체 교육")}
+            className="font-semibold text-foreground underline underline-offset-4 hover:text-primary"
+          >
+            기업 단체 교육 문의
           </a>
           로 알려 주세요.
         </p>

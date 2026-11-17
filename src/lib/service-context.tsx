@@ -1,13 +1,29 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { services } from "@/data/services";
 
-/** 종합 ESG 서비스 탭에서 열려 있는 영역. 히어로·교육 카드에서도 바꿀 수 있게 공유한다. */
-type Ctx = { selected: string; select: (id: string) => void };
+/** 종합 ESG 서비스 탭 선택 상태 및 상담 신청 관심 분야 연동 컨텍스트 */
+type Ctx = {
+  selected: string;
+  select: (id: string) => void;
+  contactInterest: string | null;
+  requestConsult: (interest: string) => void;
+};
+
 const ServiceContext = createContext<Ctx | null>(null);
 
 export function ServiceProvider({ children }: { children: ReactNode }) {
   const [selected, setSelected] = useState(services[0].id);
-  return <ServiceContext.Provider value={{ selected, select: setSelected }}>{children}</ServiceContext.Provider>;
+  const [contactInterest, setContactInterest] = useState<string | null>(null);
+
+  const requestConsult = (interest: string) => {
+    setContactInterest(interest);
+  };
+
+  return (
+    <ServiceContext.Provider value={{ selected, select: setSelected, contactInterest, requestConsult }}>
+      {children}
+    </ServiceContext.Provider>
+  );
 }
 
 export function useService() {

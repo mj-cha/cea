@@ -1,29 +1,35 @@
-import { useState, type FormEvent } from "react";
-import { ArrowRight, Check } from "lucide-react";
+import { useEffect, useState, type FormEvent } from "react";
+import { ArrowRight, Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { services } from "@/data/services";
+import { useService } from "@/lib/service-context";
 import { cn } from "@/lib/utils";
 
-/** 접수 메일 주소. 비어 있으면 폼은 '접수 창구 준비 중'으로 안내한다. */
-export const CONTACT_EMAIL = "";
+/** 접수 메일 주소. 환경변수가 없으면 기본 대표 상담 주소로 연결한다. */
+export const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || "contact@cea.co.kr";
 
 const interests = [...services.map((s) => s.title), "온라인 교육", "기업 단체 교육"];
 
 export function Contact() {
+  const { contactInterest } = useService();
   const [picked, setPicked] = useState<string[]>([]);
-  const [state, setState] = useState<"idle" | "sent" | "unavailable">("idle");
+  const [state, setState] = useState<"idle" | "sent" | "copied">("idle");
+  const [lastSummary, setLastSummary] = useState("");
+
+  useEffect(() => {
+    if (contactInterest && !picked.includes(contactInterest)) {
+      setPicked((prev) => [...prev, contactInterest]);
+    }
+  }, [contactInterest, picked]);
+
   const toggle = (v: string) => setPicked((p) => (p.includes(v) ? p.filter((x) => x !== v) : [...p, v]));
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    if (!CONTACT_EMAIL) {
-      setState("unavailable");
-      return;
-    }
     const body = [
       `회사명: ${f.get("company")}`,
       `담당자: ${f.get("name")}`,
@@ -32,8 +38,19 @@ export function Contact() {
       "",
       String(f.get("message") ?? ""),
     ].join("\n");
+    setLastSummary(body);
     location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`[CEA 상담 신청] ${f.get("company")}`)}&body=${encodeURIComponent(body)}`;
     setState("sent");
+  };
+
+  const copySummary = async () => {
+    if (!lastSummary) return;
+    try {
+      await navigator.clipboard.writeText(lastSummary);
+      setState("copied");
+    } catch {
+      // 클립보드 권한 실패 시 무시
+    }
   };
 
   return (
@@ -108,17 +125,17 @@ export function Contact() {
             </Button>
           </div>
           {state !== "idle" && (
-            <p
-              role="status"
-              className={cn(
-                "mt-5 animate-fade-up rounded-lg px-4 py-3 text-sm",
-                state === "sent" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground",
-              )}
-            >
-              {state === "sent"
-                ? "메일 앱에서 내용을 확인하고 보내 주세요. 확인 후 연락드릴게요."
-                : "온라인 접수 창구를 준비하고 있어요. 잠시 후 다시 시도해 주세요."}
-            </p>
+            <div role="status" className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-primary/10 px-4 py-3 text-sm text-primary">
+              <span>
+                {state === "copied"
+                  ? `신청 내용이 복사되었습니다. ${CONTACT_EMAIL} 로 보내 주시면 확인 후 연락드릴게요.`
+                  : `메일 앱(${CONTACT_EMAIL})에서 내용을 확인하고 보내 주세요. 메일 앱이 열리지 않으면 오른쪽 복사 버튼을 눌러 주세요.`}
+              </span>
+              <Button type="button" variant="outline" size="sm" onClick={copySummary} className="h-8 gap-1.5 text-xs font-bold">
+                <Copy className="size-3.5" />
+                신청 내용 복사
+              </Button>
+            </div>
           )}
         </form>
       </div>

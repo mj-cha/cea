@@ -72,8 +72,17 @@ export function Header() {
             </a>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-2">
-          <Button asChild className="hidden h-9 px-3.5 font-semibold sm:inline-flex">
+        <div className="ml-auto flex items-center gap-1.5">
+          <Button asChild variant="outline" size="sm" className="hidden h-9 px-3 text-xs font-bold sm:inline-flex">
+            <a href="#lms">나의 강의실</a>
+          </Button>
+          <Button asChild variant="outline" size="sm" className="hidden h-9 px-3 text-xs font-bold lg:inline-flex">
+            <a href="#apply">기업 아이디 등록폼</a>
+          </Button>
+          <Button asChild variant="secondary" size="sm" className="hidden h-9 px-3 text-xs font-bold sm:inline-flex">
+            <a href="#admin">관리자 콘솔</a>
+          </Button>
+          <Button asChild className="hidden h-9 px-3.5 text-xs font-semibold sm:inline-flex">
             <a href="#contact">상담 신청</a>
           </Button>
           <Button
@@ -96,6 +105,15 @@ export function Header() {
                 {n.label}
               </a>
             ))}
+            <a href="#lms" className="py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
+              나의 온라인 강의실
+            </a>
+            <a href="#apply" className="py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
+              기업 전용 아이디 등록 폼
+            </a>
+            <a href="#admin" className="py-2.5 text-sm font-bold" onClick={() => setOpen(false)}>
+              관리자 콘솔 (14대 메뉴)
+            </a>
             <Button asChild className="mt-2 h-11 font-semibold">
               <a href="#contact" onClick={() => setOpen(false)}>
                 상담 신청
