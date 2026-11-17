@@ -36,7 +36,7 @@ const PART_A_IDS: AdminMenuId[] = [
 ];
 
 export function AdminConsole({ onGoLms }: { onGoLms: () => void }) {
-  const { users, admins, resetDemoData } = useLms();
+  const { users, admins, syncStatus, resetDemoData } = useLms();
   const [menu, setMenu] = useState<AdminMenuId>("dashboard");
   const [selectedUserId, setSelectedUserId] = useState(users[0]?.id ?? "usr-101");
   const [selectedAdminId, setSelectedAdminId] = useState(admins[0]?.id ?? "adm-1");
@@ -54,12 +54,16 @@ export function AdminConsole({ onGoLms }: { onGoLms: () => void }) {
                 <Shield className="size-3.5" />
                 CEA 통합 관리자 콘솔 (14대 운영 모듈)
               </Badge>
-              <Badge variant="outline" className="gap-1 text-xs">
-                <Database className="size-3 text-primary" />
+              <button
+                type="button"
+                onClick={() => setMenu("host-plan")}
+                className="inline-flex items-center gap-1.5 rounded-full border bg-background px-3 py-1 text-xs font-semibold transition-colors hover:border-primary"
+              >
+                <Database className="size-3.5 text-primary" />
                 {SUPABASE_CONFIG.isConnected
-                  ? "Supabase 실서버 클라우드 연결됨"
-                  : "Supabase 로컬 동기화 모드 (.env 설정 시 실서버 직결)"}
-              </Badge>
+                  ? `Supabase 실서버 연결됨 (동기화: ${syncStatus})`
+                  : "Supabase 실서버 연결 설정하기 (03번 메뉴) →"}
+              </button>
             </div>
             <h1 className="text-xl font-extrabold tracking-tight md:text-2xl">
               {activeMenuObj.no}. {activeMenuObj.label}

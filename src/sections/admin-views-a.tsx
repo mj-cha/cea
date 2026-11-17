@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLms } from "@/lib/lms-store";
 import type { AdminMenuId, VideoSourceType } from "@/lib/lms-types";
+import { SupabaseSetupPanel } from "@/components/supabase-setup-panel";
 import { AdminViewsAccounts } from "@/sections/admin-views-accounts";
 
 export function AdminViewsPartA({
@@ -224,29 +225,32 @@ export function AdminViewsPartA({
 
   if (menu === "host-plan") {
     return (
-      <Card className="py-5">
-        <CardHeader className="px-6 pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg font-extrabold">
-            <Server className="size-5 text-primary" />
-            호스트와 요금제 현황 (도메인 · 웹호스팅 · Supabase DB · 영상 · 구글 드라이브)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 px-6">
-          {hostPlans.map((h) => (
-            <div key={h.id} className="rounded-xl border p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-primary/15 text-primary">{h.category}</Badge>
-                  <span className="font-extrabold">{h.provider}</span>
-                  <span className="text-xs text-muted-foreground">({h.planName})</span>
+      <div className="space-y-6">
+        <SupabaseSetupPanel />
+        <Card className="py-5">
+          <CardHeader className="px-6 pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg font-extrabold">
+              <Server className="size-5 text-primary" />
+              호스트와 요금제 현황 (도메인 · 웹호스팅 · Supabase DB · 영상 · 구글 드라이브)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 px-6">
+            {hostPlans.map((h) => (
+              <div key={h.id} className="rounded-xl border p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-primary/15 text-primary">{h.category}</Badge>
+                    <span className="font-extrabold">{h.provider}</span>
+                    <span className="text-xs text-muted-foreground">({h.planName})</span>
+                  </div>
+                  <span className="text-sm font-bold text-primary">월 비용: {h.monthlyCost}</span>
                 </div>
-                <span className="text-sm font-bold text-primary">월 비용: {h.monthlyCost}</span>
+                <p className="mt-1.5 text-xs text-muted-foreground">{h.usageSummary} — {h.note}</p>
               </div>
-              <p className="mt-1.5 text-xs text-muted-foreground">{h.usageSummary} — {h.note}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 

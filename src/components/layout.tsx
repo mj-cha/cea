@@ -3,12 +3,23 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-/** 로고: public/cea-logo.svg 를 실제 CEA 로고로 교체하면 전체에 반영된다. */
+/** 로고: 구글 드라이브 공식 CEA 심볼(public/cea-logo.png) 및 영문 사명 반영 */
 export function Logo({ className }: { className?: string }) {
   return (
     <a href="#top" className={cn("flex items-center gap-2.5", className)} aria-label="CEA 홈">
-      <img src="/cea-logo.svg" alt="" className="size-8" width={32} height={32} />
-      <span className="text-[19px] font-extrabold tracking-[-0.02em]">CEA</span>
+      <img
+        src="/cea-logo.png"
+        alt="CEA 심볼 로고"
+        className="size-9 rounded-full bg-white/95 p-0.5 object-contain shadow-xs"
+        width={36}
+        height={36}
+      />
+      <div className="flex flex-col leading-none">
+        <span className="text-[19px] font-extrabold tracking-[-0.02em]">CEA</span>
+        <span className="hidden text-[10px] font-medium tracking-tight text-muted-foreground sm:inline">
+          Corporate Ecosystem Advisory
+        </span>
+      </div>
     </a>
   );
 }

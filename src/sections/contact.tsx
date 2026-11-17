@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { services } from "@/data/services";
 import { useService } from "@/lib/service-context";
+import { getSupabaseConfig, insertConsultToSupabase } from "@/lib/supabase-client";
 import { cn } from "@/lib/utils";
 
 /** 접수 메일 주소. 환경변수가 없으면 기본 대표 상담 주소로 연결한다. */
@@ -16,7 +17,7 @@ const interests = [...services.map((s) => s.title), "온라인 교육", "기업 
 export function Contact() {
   const { contactInterest } = useService();
   const [picked, setPicked] = useState<string[]>([]);
-  const [state, setState] = useState<"idle" | "sent" | "copied">("idle");
+  const [state, setState] = useState<"idle" | "sent" | "copied" | "db_saved">("idle");
   const [lastSummary, setLastSummary] = useState("");
 
   useEffect(() => {
@@ -27,19 +28,39 @@ export function Contact() {
 
   const toggle = (v: string) => setPicked((p) => (p.includes(v) ? p.filter((x) => x !== v) : [...p, v]));
 
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
+    const company = String(f.get("company") ?? "").trim();
+    const managerName = String(f.get("name") ?? "").trim();
+    const email = String(f.get("email") ?? "").trim();
+    const message = String(f.get("message") ?? "").trim();
+
     const body = [
-      `회사명: ${f.get("company")}`,
-      `담당자: ${f.get("name")}`,
-      `연락처: ${f.get("email")}`,
+      `회사명: ${company}`,
+      `담당자: ${managerName}`,
+      `연락처: ${email}`,
       `관심 분야: ${picked.join(", ") || "-"}`,
       "",
-      String(f.get("message") ?? ""),
+      message,
     ].join("\n");
     setLastSummary(body);
-    location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`[CEA 상담 신청] ${f.get("company")}`)}&body=${encodeURIComponent(body)}`;
+
+    if (getSupabaseConfig().isConnected) {
+      const res = await insertConsultToSupabase({
+        company,
+        managerName,
+        email,
+        interests: picked,
+        message,
+      });
+      if (res.ok) {
+        setState("db_saved");
+        return;
+      }
+    }
+
+    location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`[CEA 상담 신청] ${company}`)}&body=${encodeURIComponent(body)}`;
     setState("sent");
   };
 
@@ -127,9 +148,11 @@ export function Contact() {
           {state !== "idle" && (
             <div role="status" className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-primary/10 px-4 py-3 text-sm text-primary">
               <span>
-                {state === "copied"
-                  ? `신청 내용이 복사되었습니다. ${CONTACT_EMAIL} 로 보내 주시면 확인 후 연락드릴게요.`
-                  : `메일 앱(${CONTACT_EMAIL})에서 내용을 확인하고 보내 주세요. 메일 앱이 열리지 않으면 오른쪽 복사 버튼을 눌러 주세요.`}
+                {state === "db_saved"
+                  ? "Supabase 실서버 DB(cea_consult_requests)에 상담 신청이 즉시 접수되었습니다. 담당 컨설턴트가 확인 후 연락드릴게요."
+                  : state === "copied"
+                    ? `신청 내용이 복사되었습니다. ${CONTACT_EMAIL} 로 보내 주시면 확인 후 연락드릴게요.`
+                    : `메일 앱(${CONTACT_EMAIL})에서 내용을 확인하고 보내 주세요. 메일 앱이 열리지 않으면 오른쪽 복사 버튼을 눌러 주세요.`}
               </span>
               <Button type="button" variant="outline" size="sm" onClick={copySummary} className="h-8 gap-1.5 text-xs font-bold">
                 <Copy className="size-3.5" />

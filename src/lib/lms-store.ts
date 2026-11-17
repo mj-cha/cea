@@ -1,4 +1,4 @@
-import { createContext, createElement, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, createElement, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   initialAdmins,
   initialAuditLogs,
@@ -23,16 +23,33 @@ import type {
   UserRole,
   VideoSourceType,
 } from "@/lib/lms-types";
+import {
+  getSupabaseConfig,
+  pullLmsStateFromSupabase,
+  pushLmsStateToSupabase,
+} from "@/lib/supabase-client";
 
 const STORAGE_KEY = "cea_lms_state_v1";
 
 export const SUPABASE_CONFIG = {
-  url: (import.meta.env.VITE_SUPABASE_URL as string | undefined) || "",
-  anonKey: (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined) || "",
+  get url() {
+    return getSupabaseConfig().url;
+  },
+  get anonKey() {
+    return getSupabaseConfig().anonKey;
+  },
   get isConnected() {
-    return Boolean(this.url && this.anonKey);
+    return getSupabaseConfig().isConnected;
   },
 };
+
+interface PersistedLmsState {
+  courseMedia: CourseMediaConfig[];
+  corps: CorpEntity[];
+  users: UserAccount[];
+  auditLogs: AdminAuditLog[];
+  qnas: QnAItem[];
+}
 
 interface LmsContextValue {
   courseMedia: CourseMediaConfig[];
@@ -46,6 +63,11 @@ interface LmsContextValue {
   hostPlans: HostPlanStatus[];
   activeUserId: string;
   setActiveUserId: (id: string) => void;
+  syncStatus: "로컬전용" | "진행 중" | "성공" | "실패";
+  syncMessage: string;
+  syncToCloud: () => Promise<void>;
+  pullFromCloud: () => Promise<void>;
+  refreshSupabaseConfig: () => void;
   applyByCorpForm: (params: {
     corpCode: string;
     email: string;
@@ -88,29 +110,103 @@ export function LmsProvider({ children }: { children: ReactNode }) {
   const [hostPlans] = useState<HostPlanStatus[]>(initialHostPlans);
   const [activeUserId, setActiveUserId] = useState<string>(initialUsers[0]?.id ?? "usr-101");
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
-      if (parsed.courseMedia) setCourseMedia(parsed.courseMedia);
-      if (parsed.corps) setCorps(parsed.corps);
-      if (parsed.users) setUsers(parsed.users);
-      if (parsed.auditLogs) setAuditLogs(parsed.auditLogs);
-      if (parsed.qnas) setQnas(parsed.qnas);
-    } catch {
-      // 기본 시드 유지
+  const [configTick, setConfigTick] = useState(0);
+  const [syncStatus, setSyncStatus] = useState<"로컬전용" | "진행 중" | "성공" | "실패">(() =>
+    getSupabaseConfig().isConnected ? "진행 중" : "로컬전용",
+  );
+  const [syncMessage, setSyncMessage] = useState("");
+  const isInitialLoaded = useRef(false);
+
+  const applyPersisted = useCallback((parsed: Partial<PersistedLmsState>) => {
+    if (parsed.courseMedia?.length) setCourseMedia(parsed.courseMedia);
+    if (parsed.corps?.length) setCorps(parsed.corps);
+    if (parsed.users?.length) setUsers(parsed.users);
+    if (parsed.auditLogs?.length) setAuditLogs(parsed.auditLogs);
+    if (parsed.qnas?.length) setQnas(parsed.qnas);
+  }, []);
+
+  const pullFromCloud = useCallback(async () => {
+    const cfg = getSupabaseConfig();
+    if (!cfg.isConnected) {
+      setSyncStatus("로컬전용");
+      return;
     }
+    setSyncStatus("진행 중");
+    const res = await pullLmsStateFromSupabase<PersistedLmsState>();
+    if (!res.ok) {
+      setSyncStatus("실패");
+      setSyncMessage(`실패: 클라우드 조회 오류 (${res.error || "알 수 없음"})`);
+      return;
+    }
+    if (res.data) {
+      applyPersisted(res.data);
+      setSyncStatus("성공");
+      setSyncMessage(`성공: Supabase 클라우드 데이터를 불러왔습니다 (${res.updatedAt?.slice(0, 19).replace("T", " ") || "방금"})`);
+    } else {
+      setSyncStatus("성공");
+      setSyncMessage("성공: 연결 완료 (클라우드 초기 시드를 업로드합니다)");
+    }
+  }, [applyPersisted]);
+
+  const syncToCloud = useCallback(async () => {
+    const cfg = getSupabaseConfig();
+    if (!cfg.isConnected) {
+      setSyncStatus("로컬전용");
+      return;
+    }
+    setSyncStatus("진행 중");
+    const payload: PersistedLmsState = { courseMedia, corps, users, auditLogs, qnas };
+    const res = await pushLmsStateToSupabase(payload);
+    if (res.ok) {
+      setSyncStatus("성공");
+      setSyncMessage(`성공: Supabase 실서버 DB 동기화 완료 (${nowDateTime()})`);
+    } else {
+      setSyncStatus("실패");
+      setSyncMessage(`실패: Supabase 저장 오류 (${res.error || "권한 또는 테이블 확인 필요"})`);
+    }
+  }, [courseMedia, corps, users, auditLogs, qnas]);
+
+  const refreshSupabaseConfig = useCallback(() => {
+    setConfigTick((t) => t + 1);
   }, []);
 
   useEffect(() => {
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ courseMedia, corps, users, auditLogs, qnas }),
-      );
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        applyPersisted(JSON.parse(raw));
+      }
+    } catch {
+      // 기본 시드 유지
+    }
+    isInitialLoaded.current = true;
+  }, [applyPersisted]);
+
+  useEffect(() => {
+    if (getSupabaseConfig().isConnected) {
+      void pullFromCloud();
+    } else {
+      setSyncStatus("로컬전용");
+      setSyncMessage("");
+    }
+  }, [configTick, pullFromCloud]);
+
+  useEffect(() => {
+    if (!isInitialLoaded.current) return;
+    const payload: PersistedLmsState = { courseMedia, corps, users, auditLogs, qnas };
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch {
       // 저장 공간 오류 무시
+    }
+    if (getSupabaseConfig().isConnected) {
+      const timer = setTimeout(() => {
+        void pushLmsStateToSupabase(payload).then((res) => {
+          setSyncStatus(res.ok ? "성공" : "실패");
+          if (!res.ok) setSyncMessage(`실패: ${res.error}`);
+        });
+      }, 400);
+      return () => clearTimeout(timer);
     }
   }, [courseMedia, corps, users, auditLogs, qnas]);
 
@@ -315,6 +411,11 @@ export function LmsProvider({ children }: { children: ReactNode }) {
         hostPlans,
         activeUserId,
         setActiveUserId,
+        syncStatus,
+        syncMessage,
+        syncToCloud,
+        pullFromCloud,
+        refreshSupabaseConfig,
         applyByCorpForm,
         bulkOpenCourses,
         updateProgress,

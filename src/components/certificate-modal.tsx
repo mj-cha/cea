@@ -67,7 +67,10 @@ export function CertificateBatchModal({
             >
               <div className="flex items-center justify-between border-b border-slate-200 pb-4 text-xs text-slate-500">
                 <span className="font-mono font-semibold">제 {item.certNo} 호</span>
-                <span>www.cea.co.kr · 공식 교육이수 증명서</span>
+                <span className="flex items-center gap-1.5 font-semibold text-slate-700">
+                  <img src="/cea-logo.png" alt="CEA" className="size-5 object-contain" width={20} height={20} />
+                  CEA · Corporate Ecosystem Advisory &amp; Assurance
+                </span>
               </div>
 
               <div className="my-8 text-center">
