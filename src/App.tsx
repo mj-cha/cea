@@ -2,16 +2,19 @@ import { useEffect, useState } from "react";
 import { Footer, Header } from "@/components/layout";
 import { LmsProvider } from "@/lib/lms-store";
 import { ServiceProvider } from "@/lib/service-context";
+import { useStudioChildBridge } from "@/lib/studio-bridge";
 import { AdminConsole } from "@/sections/admin-console";
 import { Contact, Faq, Fit, Process, WhyNow } from "@/sections/content";
 import { Education } from "@/sections/education";
 import { Hero } from "@/sections/hero";
 import { LmsPortal } from "@/sections/lms-portal";
 import { Services } from "@/sections/services";
+import { StudioShell } from "@/sections/studio-shell";
 
-type ViewMode = "home" | "lms" | "apply" | "admin";
+type ViewMode = "home" | "lms" | "apply" | "admin" | "studio";
 
 function parseHashMode(hash: string): ViewMode {
+  if (hash.startsWith("#__studio")) return "studio";
   if (hash.startsWith("#admin")) return "admin";
   if (hash.startsWith("#apply")) return "apply";
   if (hash.startsWith("#lms")) return "lms";
@@ -19,7 +22,9 @@ function parseHashMode(hash: string): ViewMode {
 }
 
 export function App() {
+  useStudioChildBridge();
   const [mode, setMode] = useState<ViewMode>(() => parseHashMode(window.location.hash));
+  const isEmbed = new URLSearchParams(window.location.search).get("studio_embed") === "1";
 
   useEffect(() => {
     const onHashChange = () => {
@@ -38,6 +43,10 @@ export function App() {
     setMode(parseHashMode(h));
   };
 
+  if (mode === "studio" && !isEmbed) {
+    return <StudioShell onExit={() => goHash("#top")} />;
+  }
+
   return (
     <LmsProvider>
       <ServiceProvider>
@@ -49,7 +58,8 @@ export function App() {
         </a>
         <Header />
 
-        {/* 상단 모드 전환 바 (홈페이지 · 강의실 · 기업전용 폼 · 14대 관리자 콘솔) */}
+        {/* 상단 모드 전환 바 (홈페이지 · 강의실 · 기업전용 폼 · 14대 관리자 콘솔 · 스튜디오 뷰어) */}
+        {!isEmbed && (
         <div className="border-b bg-muted/30 py-2 print:hidden">
           <div className="container flex flex-wrap items-center justify-between gap-2 text-xs">
             <span className="font-semibold text-muted-foreground">
@@ -62,6 +72,7 @@ export function App() {
                   ["lms", "#lms", "② 온라인 강의실 (진도율·수료증)"],
                   ["apply", "#apply", "③ 기업 전용 아이디 등록폼 (자동오픈)"],
                   ["admin", "#admin", "④ 관리자 콘솔 (14대 메뉴 · 수료증 일괄출력)"],
+                  ["studio", "#__studio", "⑤ 스튜디오 뷰어 (전체 화면 검수)"],
                 ] as const
               ).map(([m, h, label]) => (
                 <button
@@ -80,6 +91,7 @@ export function App() {
             </div>
           </div>
         </div>
+        )}
 
         <main>
           {mode === "admin" ? (

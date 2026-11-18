@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Database, RotateCcw, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,9 +37,21 @@ const PART_A_IDS: AdminMenuId[] = [
 
 export function AdminConsole({ onGoLms }: { onGoLms: () => void }) {
   const { users, admins, syncStatus, resetDemoData } = useLms();
-  const [menu, setMenu] = useState<AdminMenuId>("dashboard");
+  const [menu, setMenu] = useState<AdminMenuId>(() => {
+    const sub = window.location.hash.replace(/^#admin\/?/, "");
+    return ADMIN_MENUS.some((m) => m.id === sub) ? (sub as AdminMenuId) : "dashboard";
+  });
   const [selectedUserId, setSelectedUserId] = useState(users[0]?.id ?? "usr-101");
   const [selectedAdminId, setSelectedAdminId] = useState(admins[0]?.id ?? "adm-1");
+
+  useEffect(() => {
+    const syncSubMenu = () => {
+      const sub = window.location.hash.replace(/^#admin\/?/, "");
+      if (ADMIN_MENUS.some((m) => m.id === sub)) setMenu(sub as AdminMenuId);
+    };
+    window.addEventListener("hashchange", syncSubMenu);
+    return () => window.removeEventListener("hashchange", syncSubMenu);
+  }, []);
 
   const activeMenuObj = ADMIN_MENUS.find((m) => m.id === menu) ?? ADMIN_MENUS[0];
 

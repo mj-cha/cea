@@ -8,7 +8,7 @@ export function Logo({ className }: { className?: string }) {
   return (
     <a href="#top" className={cn("flex items-center gap-2.5", className)} aria-label="CEA 홈">
       <img
-        src="/cea-logo.png"
+        src={`${import.meta.env.BASE_URL}cea-logo.png`}
         alt="CEA 심볼 로고"
         className="size-9 rounded-full bg-white/95 p-0.5 object-contain shadow-xs"
         width={36}
