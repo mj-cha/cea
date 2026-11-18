@@ -1,0 +1,75 @@
+<!-- studio v1.0 — 공통 파일. 사이트별로 고치지 않고, 바꾸면 고수템·CEA 둘 다 같이 -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>검수 스튜디오</title>
+  <link rel="stylesheet" href="/__studio/studio.css" />
+</head>
+<body class="st-body">
+  <div class="st-narrow" role="status">PC에서 열어 주세요 (최소 폭 1100px)</div>
+
+  <div class="st-shell">
+    <header class="st-topbar">
+      <div class="st-top-left">
+        <a id="st-site-link" class="st-btn st-ghost" href="/">← 사이트</a>
+        <strong id="st-project" class="st-proj">검수 스튜디오</strong>
+        <div class="st-vp-group" role="group" aria-label="미리보기 화면 크기">
+          <button type="button" id="st-vp-d" class="st-vp-btn" aria-pressed="true">데스크톱 1440</button>
+          <button type="button" id="st-vp-m" class="st-vp-btn" aria-pressed="false">모바일 390</button>
+        </div>
+        <button type="button" id="st-reload" class="st-btn st-ghost">다시 불러오기</button>
+        <button type="button" id="st-open-tab" class="st-btn st-ghost">새 탭에서 열기</button>
+      </div>
+      <div class="st-top-right">
+        <button type="button" class="st-btn st-ghost" disabled title="2단계에서 열려요">기능·화면 추가</button>
+      </div>
+    </header>
+
+    <div class="st-columns">
+      <aside class="st-left" aria-label="페이지 목록">
+        <div class="st-left-head">
+          <span class="st-sec-title">페이지 목록</span>
+          <input id="st-filter" class="st-input st-search" type="search" placeholder="화면·주소 찾기…" aria-label="화면 목록 검색" />
+        </div>
+        <nav id="st-nav" class="st-nav" aria-label="전체 화면 탐색"></nav>
+        <div id="st-meta" class="st-meta">화면 0개</div>
+      </aside>
+
+      <main id="st-stage" class="st-stage" aria-label="실시간 미리보기">
+        <div id="st-error" class="st-error" hidden></div>
+        <div id="st-canvas" class="st-canvas">
+          <div id="st-frame-box" class="st-frame-box">
+            <iframe id="st-frame" class="st-frame" title="화면 미리보기"></iframe>
+          </div>
+        </div>
+      </main>
+
+      <aside class="st-right" aria-label="편집">
+        <section class="st-card">
+          <h2 class="st-sec-title">페이지 고치기</h2>
+          <button type="button" id="st-pick-btn" class="st-btn st-full" aria-pressed="false">미리보기에서 블록 고르기</button>
+          <div id="st-pick-chip" class="st-chip" hidden>
+            <span id="st-pick-text" class="st-chip-text"></span>
+            <button type="button" id="st-pick-clear" class="st-chip-x" aria-label="고른 블록 지우기">×</button>
+          </div>
+          <p id="st-pick-hint" class="st-sub">블록을 안 고르면 화면 전체를 고쳐요.</p>
+          <textarea id="st-memo" class="st-textarea" rows="4" aria-label="페이지 고치기 내용" placeholder="예: 카드를 두 줄로 크게, 가격 아래 남은 자리 수"></textarea>
+          <button type="button" id="st-submit" class="st-btn st-primary st-full" disabled>고치기</button>
+          <p id="st-result" class="st-result" role="status"></p>
+          <textarea id="st-clip-fb" class="st-textarea st-clip-fb" rows="3" readonly aria-label="수동 복사용 텍스트" hidden></textarea>
+          <ul id="st-session-list" class="st-session-list"></ul>
+        </section>
+
+        <section class="st-card">
+          <h2 class="st-sec-title">테마</h2>
+          <div id="st-themes" class="st-themes" role="group" aria-label="테마 선택"></div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module" src="/__studio/studio.js"></script>
+</body>
+</html>

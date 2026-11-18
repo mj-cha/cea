@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "project": "CEA 교육·컨설팅 플랫폼",
+  "appPath": "/",
+  "viewports": { "d": 1440, "m": 390 },
+  "groups": [
+    { "id": "public", "name": "공개" },
+    { "id": "member", "name": "회원" },
+    { "id": "service", "name": "서비스" },
+    { "id": "admin", "name": "관리자" },
+    { "id": "legal", "name": "약관" },
+    { "id": "lab", "name": "실험실" }
+  ],
+  "screens": [
+    { "route": "#top", "title": "홈 · 메인 히어로", "group": "public", "status": "있음", "required": true, "desc": "핵심 슬로건과 주요 서비스 진입" },
+    { "route": "#why-now", "title": "도입 배경 (Why Now)", "group": "public", "status": "있음", "desc": "공급망 실사 및 ESG 의무화 대응 배경" },
+    { "route": "#services", "title": "7대 ESG 컨설팅 메뉴", "group": "public", "status": "있음", "desc": "거버넌스·공시·탄소 등 컨설팅 상세 탭" },
+    { "route": "#education", "title": "직무·직급별 교육 과정", "group": "public", "status": "있음", "desc": "임원·실무자·협력사 맞춤 커리큘럼" },
+    { "route": "#process", "title": "도입 · 진행 절차", "group": "public", "status": "있음", "desc": "사전 진단부터 결과 리포트까지 단계 안내" },
+    { "route": "#fit", "title": "추천 기업 유형", "group": "public", "status": "있음", "desc": "기업 규모·상황별 맞춤 도입 안내" },
+    { "route": "#faq", "title": "자주 묻는 질문", "group": "public", "status": "있음", "desc": "수료증·과정 운영·비용 안내" },
+    { "route": "#contact", "title": "도입 상담 · 견적 문의", "group": "public", "status": "있음", "desc": "관심 분야 연동 상담 신청 폼" },
+    { "route": "#apply", "title": "기업 전용 아이디 등록 폼", "group": "member", "status": "있음", "required": true, "desc": "기업 코드 기반 수강 계정 등록·강의 자동 오픈" },
+    { "route": "#lms", "title": "나의 온라인 강의실", "group": "service", "status": "있음", "required": true, "desc": "수강생 진도율 학습 및 수료증 발급" },
+    { "route": "#admin", "title": "관리자 콘솔 (14대 운영 모듈)", "group": "admin", "status": "있음", "required": true, "desc": "대시보드·콘텐츠·법인·이수율·수료증 일괄출력·매출 관리" }
+  ],
+  "themes": [
+    {
+      "id": "ink-lime",
+      "name": "잉크 그린 · 라임(기본)",
+      "attrs": {},
+      "vars": {}
+    },
+    {
+      "id": "trust-blue",
+      "name": "핀테크 블루(밝게)",
+      "attrs": {},
+      "vars": {
+        "--background": "#f8fafc",
+        "--foreground": "#0f172a",
+        "--card": "#ffffff",
+        "--card-foreground": "#0f172a",
+        "--popover": "#ffffff",
+        "--popover-foreground": "#0f172a",
+        "--primary": "#2563eb",
+        "--primary-foreground": "#ffffff",
+        "--secondary": "#e2e8f0",
+        "--secondary-foreground": "#0f172a",
+        "--muted": "#f1f5f9",
+        "--muted-foreground": "#475569",
+        "--accent": "#eff6ff",
+        "--accent-foreground": "#1e3a8a",
+        "--border": "#cbd5e1",
+        "--input": "#cbd5e1",
+        "--ring": "#2563eb"
+      }
+    },
+    {
+      "id": "clean-emerald",
+      "name": "클린 에메랄드(밝게)",
+      "attrs": {},
+      "vars": {
+        "--background": "#f6fbf8",
+        "--foreground": "#11221b",
+        "--card": "#ffffff",
+        "--card-foreground": "#11221b",
+        "--popover": "#ffffff",
+        "--popover-foreground": "#11221b",
+        "--primary": "#059669",
+        "--primary-foreground": "#ffffff",
+        "--secondary": "#e6f4ed",
+        "--secondary-foreground": "#11221b",
+        "--muted": "#edf7f1",
+        "--muted-foreground": "#3f5f51",
+        "--accent": "#d1fae5",
+        "--accent-foreground": "#064e3b",
+        "--border": "#cce3d6",
+        "--input": "#cce3d6",
+        "--ring": "#059669"
+      }
+    }
+  ],
+  "pricingModel": null,
+  "features": []
+}
