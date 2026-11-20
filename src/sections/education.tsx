@@ -9,9 +9,9 @@ import { useService } from "@/lib/service-context";
 import { cn } from "@/lib/utils";
 
 const levelTone: Record<string, string> = {
-  입문: "bg-sky-400/15 text-sky-300",
+  입문: "bg-blue-600/15 text-blue-700 dark:text-blue-200",
   실무: "bg-primary/15 text-primary",
-  심화: "bg-amber-400/15 text-amber-300",
+  심화: "bg-indigo-600/15 text-indigo-800 dark:text-indigo-200",
 };
 
 export function Education() {

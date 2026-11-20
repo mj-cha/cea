@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Menu, X } from "lucide-react";
+import { LogIn, LogOut, Menu, Moon, ShieldCheck, Sun, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLms } from "@/lib/lms-store";
 import { cn } from "@/lib/utils";
 
 /** 로고: 구글 드라이브 공식 CEA 심볼(public/cea-logo.png) 및 영문 사명 반영 */
@@ -10,7 +11,7 @@ export function Logo({ className }: { className?: string }) {
       <img
         src={`${import.meta.env.BASE_URL}cea-logo.png`}
         alt="CEA 심볼 로고"
-        className="size-9 rounded-full bg-white/95 p-0.5 object-contain shadow-xs"
+        className="size-9 rounded-full border border-border/60 bg-white p-0.5 object-contain shadow-xs"
         width={36}
         height={36}
       />
@@ -26,12 +27,14 @@ export function Logo({ className }: { className?: string }) {
 
 export const nav = [
   { href: "#services", label: "ESG 컨설팅" },
+  { href: "#publications", label: "지속가능성 발간물" },
   { href: "#education", label: "온라인 교육" },
   { href: "#process", label: "진행 방식" },
   { href: "#faq", label: "자주 묻는 질문" },
 ];
 
 export function Header() {
+  const { loggedInUser, isAdminLoggedIn, setLoginModalOpen, logout, themeMode, setThemeMode } = useLms();
   const [active, setActive] = useState("");
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -57,11 +60,11 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b border-transparent transition-colors duration-200",
-        scrolled && "border-border bg-background/85 backdrop-blur-md",
+        "sticky top-0 z-50 border-b border-border/60 bg-background/90 backdrop-blur-md transition-colors duration-200",
+        scrolled && "border-border shadow-xs",
       )}
     >
-      <div className="container flex h-16 items-center gap-8">
+      <div className="container flex h-16 items-center gap-6">
         <Logo />
         <nav className="hidden items-center gap-1 md:flex" aria-label="주요 메뉴">
           {nav.map((n) => (
@@ -83,19 +86,74 @@ export function Header() {
             </a>
           ))}
         </nav>
+
         <div className="ml-auto flex items-center gap-1.5">
+          {/* 화이트 ↔ 진한 남색 배경 테마 전환 */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setThemeMode(themeMode === "white" ? "navy" : "white")}
+            className="h-9 gap-1.5 px-2.5 text-xs font-bold"
+            title="화이트 / 진한 남색 배경 전환"
+          >
+            {themeMode === "white" ? (
+              <>
+                <Moon className="size-3.5 text-primary" />
+                <span className="hidden xl:inline">진한 남색 배경</span>
+              </>
+            ) : (
+              <>
+                <Sun className="size-3.5 text-sky-300" />
+                <span className="hidden xl:inline">화이트 배경</span>
+              </>
+            )}
+          </Button>
+
           <Button asChild variant="outline" size="sm" className="hidden h-9 px-3 text-xs font-bold sm:inline-flex">
             <a href="#lms">나의 강의실</a>
           </Button>
           <Button asChild variant="outline" size="sm" className="hidden h-9 px-3 text-xs font-bold lg:inline-flex">
             <a href="#apply">기업 아이디 등록폼</a>
           </Button>
-          <Button asChild variant="secondary" size="sm" className="hidden h-9 px-3 text-xs font-bold sm:inline-flex">
-            <a href="#admin">관리자 콘솔</a>
-          </Button>
+
+          {/* 관리자 로그인 시에만 관리자 콘솔 버튼 노출 */}
+          {isAdminLoggedIn && (
+            <Button asChild size="sm" className="hidden h-9 gap-1 px-3 text-xs font-bold sm:inline-flex">
+              <a href="#admin">
+                <ShieldCheck className="size-3.5" />
+                관리자 콘솔
+              </a>
+            </Button>
+          )}
+
+          {loggedInUser ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={logout}
+              className="hidden h-9 gap-1.5 px-3 text-xs font-bold sm:inline-flex"
+            >
+              <span>
+                {loggedInUser.name} ({isAdminLoggedIn ? "관리자" : loggedInUser.role})
+              </span>
+              <LogOut className="size-3.5" />
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setLoginModalOpen(true)}
+              className="hidden h-9 gap-1.5 px-3 text-xs font-bold sm:inline-flex"
+            >
+              <LogIn className="size-3.5" />
+              로그인
+            </Button>
+          )}
+
           <Button asChild className="hidden h-9 px-3.5 text-xs font-semibold sm:inline-flex">
             <a href="#contact">상담 신청</a>
           </Button>
+
           <Button
             variant="ghost"
             size="icon-lg"
@@ -108,6 +166,7 @@ export function Header() {
           </Button>
         </div>
       </div>
+
       {open && (
         <div className="animate-fade-up border-t bg-background md:hidden">
           <nav className="container flex flex-col py-3" aria-label="모바일 메뉴">
@@ -122,14 +181,34 @@ export function Header() {
             <a href="#apply" className="py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
               기업 전용 아이디 등록 폼
             </a>
-            <a href="#admin" className="py-2.5 text-sm font-bold" onClick={() => setOpen(false)}>
-              관리자 콘솔 (14대 메뉴)
-            </a>
-            <Button asChild className="mt-2 h-11 font-semibold">
-              <a href="#contact" onClick={() => setOpen(false)}>
-                상담 신청
+            {isAdminLoggedIn && (
+              <a href="#admin" className="py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
+                관리자 콘솔 (14대 메뉴)
               </a>
-            </Button>
+            )}
+            <div className="mt-2 flex gap-2">
+              {loggedInUser ? (
+                <Button variant="secondary" className="h-10 flex-1 font-bold" onClick={logout}>
+                  {loggedInUser.name} 로그아웃
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  className="h-10 flex-1 font-bold"
+                  onClick={() => {
+                    setOpen(false);
+                    setLoginModalOpen(true);
+                  }}
+                >
+                  로그인 (관리자 · 수강생)
+                </Button>
+              )}
+              <Button asChild className="h-10 flex-1 font-semibold">
+                <a href="#contact" onClick={() => setOpen(false)}>
+                  상담 신청
+                </a>
+              </Button>
+            </div>
           </nav>
         </div>
       )}
@@ -186,7 +265,7 @@ export function Footer() {
               </a>
             ))}
           </nav>
-          <p className="text-xs">© {new Date().getFullYear()} 주식회사 씨이에이(CEA). All rights reserved.</p>
+          <p className="text-xs">© {new Date().getFullYear()} 주식회사 씨이에이(CEA) · www.cea.co.kr. All rights reserved.</p>
         </div>
       </div>
     </footer>

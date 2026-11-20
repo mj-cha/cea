@@ -67,14 +67,20 @@ export function CertificateBatchModal({
             >
               <div className="flex items-center justify-between border-b border-slate-200 pb-4 text-xs text-slate-500">
                 <span className="font-mono font-semibold">제 {item.certNo} 호</span>
-                <span className="flex items-center gap-1.5 font-semibold text-slate-700">
-                  <img src="/cea-logo.png" alt="CEA" className="size-5 object-contain" width={20} height={20} />
-                  CEA · Corporate Ecosystem Advisory &amp; Assurance
+                <span className="flex items-center gap-1.5 font-semibold text-slate-800">
+                  <img
+                    src={`${import.meta.env.BASE_URL}cea-logo.png`}
+                    alt="CEA 로고"
+                    className="size-6 rounded-full object-contain"
+                    width={24}
+                    height={24}
+                  />
+                  www.cea.co.kr · CEA (주식회사 씨이에이)
                 </span>
               </div>
 
               <div className="my-8 text-center">
-                <p className="text-xs font-bold tracking-[0.25em] text-emerald-700">CERTIFICATE OF COMPLETION</p>
+                <p className="text-xs font-bold tracking-[0.25em] text-blue-800">CERTIFICATE OF COMPLETION</p>
                 <h4 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">교 육 수 료 증</h4>
               </div>
 
@@ -93,7 +99,7 @@ export function CertificateBatchModal({
                 </div>
                 <div className="grid grid-cols-3 border-b border-slate-200/80 pb-2">
                   <dt className="font-semibold text-slate-500">이수 교육과정</dt>
-                  <dd className="col-span-2 font-bold text-emerald-800">{item.courseTitle}</dd>
+                  <dd className="col-span-2 font-bold text-blue-900">{item.courseTitle}</dd>
                 </div>
                 <div className="grid grid-cols-3">
                   <dt className="font-semibold text-slate-500">인정 시간 · 진도율</dt>

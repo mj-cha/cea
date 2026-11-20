@@ -45,27 +45,51 @@
   }
 }
 
-/* CEA 테마: 잉크 그린 바탕 + 라임 포인트. 사이트는 다크 전용이라 :root 와 .dark 가 같다. */
-:root,
+/* CEA 공식 로고 컬러 시스템:
+ * 1) 기본(:root) = 깔끔한 화이트 바탕 + 진한 남색(Deep Navy #0f172a) 텍스트 + CEA 로얄 블루(#1d4ed8) 포인트
+ * 2) 진한 남색(.dark) = 블랙이 아닌 정통 딥 네이비(#0c1b33) 바탕 + 화이트 텍스트 + 선명한 블루(#2563eb) 포인트
+ */
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --accent: #eff6ff;
+  --accent-foreground: #1e3a8a;
+  --destructive: #dc2626;
+  --border: #cbd5e1;
+  --input: #cbd5e1;
+  --ring: #1d4ed8;
+  --radius: 0.75rem;
+}
+
 .dark {
-  --background: oklch(0.155 0.012 170);
-  --foreground: oklch(0.97 0.007 160);
-  --card: oklch(0.19 0.014 170);
-  --card-foreground: oklch(0.97 0.007 160);
-  --popover: oklch(0.19 0.014 170);
-  --popover-foreground: oklch(0.97 0.007 160);
-  --primary: oklch(0.86 0.18 128);
-  --primary-foreground: oklch(0.17 0.025 170);
-  --secondary: oklch(0.26 0.013 170);
-  --secondary-foreground: oklch(0.97 0.007 160);
-  --muted: oklch(0.23 0.012 170);
-  --muted-foreground: oklch(0.72 0.015 165);
-  --accent: oklch(0.25 0.015 170);
-  --accent-foreground: oklch(0.97 0.007 160);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.27 0.012 170);
-  --input: oklch(0.31 0.013 170);
-  --ring: oklch(0.86 0.18 128);
+  --background: #0c1b33;
+  --foreground: #f8fafc;
+  --card: #13284c;
+  --card-foreground: #f8fafc;
+  --popover: #13284c;
+  --popover-foreground: #f8fafc;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #1e3a6e;
+  --secondary-foreground: #f8fafc;
+  --muted: #173059;
+  --muted-foreground: #cbd5e1;
+  --accent: #1e3a8a;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --border: #26467a;
+  --input: #26467a;
+  --ring: #3b82f6;
   --radius: 0.75rem;
 }
 

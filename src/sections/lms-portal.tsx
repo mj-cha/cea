@@ -16,9 +16,18 @@ export function LmsPortal({
   initialTab?: "classroom" | "apply";
   onGoAdmin: () => void;
 }) {
-  const { courseMedia, corps, users, activeUserId, setActiveUserId, updateProgress } = useLms();
+  const {
+    courseMedia,
+    corps,
+    users,
+    activeUserId,
+    setActiveUserId,
+    isAdminLoggedIn,
+    setLoginModalOpen,
+    updateProgress,
+  } = useLms();
   const [tab, setTab] = useState<"classroom" | "apply">(initialTab);
-  const [selectedCorpCode, setSelectedCorpCode] = useState(corps[0]?.code ?? "samsung-display");
+  const [selectedCorpCode, setSelectedCorpCode] = useState(corps[0]?.code ?? "cea");
 
   const activeUser = users.find((u) => u.id === activeUserId) ?? users[0];
   const enrolledCourses = courseMedia.filter((m) => activeUser?.enrolledCourseIds.includes(m.courseId));
@@ -29,11 +38,8 @@ export function LmsPortal({
 
   useEffect(() => {
     setTab(initialTab);
-    const hash = window.location.hash;
-    const match = hash.match(/corp=([a-z0-9-]+)/i);
-    if (match && corps.some((c) => c.code === match[1])) {
-      setSelectedCorpCode(match[1]);
-    }
+    const match = window.location.hash.match(/corp=([a-z0-9-]+)/i);
+    if (match && corps.some((c) => c.code === match[1])) setSelectedCorpCode(match[1]);
   }, [initialTab, corps]);
 
   useEffect(() => {
@@ -50,11 +56,9 @@ export function LmsPortal({
 
   const openSingleCert = () => {
     if (!activeUser || !currentCourse) return;
-    const certNo = activeUser.certNumbers[currentCourse.courseId] ?? "CEA-2026-TEMP";
-    const completedAt = activeUser.completedAt[currentCourse.courseId] ?? new Date().toISOString().slice(0, 10);
     setCertPreview([
       {
-        certNo,
+        certNo: activeUser.certNumbers[currentCourse.courseId] ?? "CEA-2026-1011",
         userName: activeUser.name,
         userEmail: activeUser.email,
         corpName: activeUser.corpName,
@@ -62,7 +66,7 @@ export function LmsPortal({
         courseTitle: currentCourse.title,
         durationMin: currentCourse.durationMin,
         progress: currentProgress,
-        completedAt,
+        completedAt: activeUser.completedAt[currentCourse.courseId] ?? new Date().toISOString().slice(0, 10),
       },
     ]);
   };
@@ -77,33 +81,36 @@ export function LmsPortal({
               <span className="text-xs text-muted-foreground">www.cea.co.kr 온라인 교육 시스템</span>
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">
-              기업 전용 수강 신청 & 온라인 강의실
+              기업 전용 수강 신청 &amp; 온라인 강의실
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              기업 전용 링크로 아이디를 등록하면 계약된 강의가 즉시 열리고, 학습률 기준 달성 시 수료증이 자동 발급됩니다.
+              기업 전용 링크로 아이디를 등록하면 계약된 강의가 즉시 열리고, 학습률 달성 시 수료증이 자동 발급됩니다.
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={onGoAdmin} className="font-semibold">
-            관리자 콘솔(14대 메뉴 · 수료증 일괄출력) 이동 →
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => (isAdminLoggedIn ? onGoAdmin() : setLoginModalOpen(true))}
+            className="font-semibold"
+          >
+            {isAdminLoggedIn ? "관리자 콘솔(14대 메뉴 · 수료증 일괄출력) →" : "관리자 로그인 (수료증 일괄출력) →"}
           </Button>
         </div>
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as "classroom" | "apply")} className="space-y-6">
           <TabsList className="h-11!">
             <TabsTrigger value="classroom" className="gap-2 px-4 text-sm font-bold">
-              <PlayCircle className="size-4" />
-              나의 온라인 강의실 (진도율 · 수료증)
+              <PlayCircle className="size-4" /> 나의 온라인 강의실 (진도율 · 수료증)
             </TabsTrigger>
             <TabsTrigger value="apply" className="gap-2 px-4 text-sm font-bold">
-              <Link2 className="size-4" />
-              기업 전용 아이디 등록 폼 (강의 자동 오픈)
+              <Link2 className="size-4" /> 기업 전용 아이디 등록 폼 (강의 자동 오픈)
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="classroom" className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="text-xs font-bold text-muted-foreground">현재 접속 수강생(시뮬레이션 전환):</span>
+                <span className="text-xs font-bold text-muted-foreground">현재 접속 수강생(예시 계정 전환):</span>
                 <select
                   aria-label="접속 수강생 전환"
                   value={activeUser?.id ?? ""}
@@ -187,8 +194,7 @@ export function LmsPortal({
                       </div>
                       {isCompleted && (
                         <Button size="sm" onClick={openSingleCert} className="gap-1.5 font-semibold">
-                          <Award className="size-4" />
-                          수료증 확인 · 인쇄
+                          <Award className="size-4" /> 수료증 확인 · 인쇄
                         </Button>
                       )}
                     </div>
@@ -196,7 +202,7 @@ export function LmsPortal({
                   </CardHeader>
 
                   <CardContent className="space-y-5 p-6">
-                    <div className="aspect-video w-full overflow-hidden rounded-xl border bg-black">
+                    <div className="aspect-video w-full overflow-hidden rounded-xl border bg-slate-950">
                       {currentCourse.videoSourceType === "mp4" ? (
                         <video
                           key={currentCourse.videoUrl}
@@ -207,9 +213,7 @@ export function LmsPortal({
                             const v = e.currentTarget;
                             if (v.duration > 0 && activeUser) {
                               const watchedPct = Math.round((v.currentTime / v.duration) * 100);
-                              if (watchedPct > currentProgress) {
-                                updateProgress(activeUser.id, currentCourse.courseId, watchedPct);
-                              }
+                              if (watchedPct > currentProgress) updateProgress(activeUser.id, currentCourse.courseId, watchedPct);
                             }
                           }}
                         />
@@ -243,16 +247,12 @@ export function LmsPortal({
                             size="sm"
                             variant="outline"
                             onClick={() =>
-                              activeUser &&
-                              updateProgress(activeUser.id, currentCourse.courseId, Math.min(100, currentProgress + 20))
+                              activeUser && updateProgress(activeUser.id, currentCourse.courseId, Math.min(100, currentProgress + 20))
                             }
                           >
                             +20% 시청 진행 (테스트)
                           </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => activeUser && updateProgress(activeUser.id, currentCourse.courseId, 100)}
-                          >
+                          <Button size="sm" onClick={() => activeUser && updateProgress(activeUser.id, currentCourse.courseId, 100)}>
                             100% 수강 완료 처리
                           </Button>
                         </div>
@@ -274,8 +274,7 @@ export function LmsPortal({
                       </div>
                       <Button asChild variant="outline" size="sm" className="shrink-0 gap-1.5">
                         <a href={currentCourse.driveMaterialUrl} target="_blank" rel="noreferrer">
-                          구글 드라이브 교안 열기
-                          <ExternalLink className="size-3.5" />
+                          구글 드라이브 교안 열기 <ExternalLink className="size-3.5" />
                         </a>
                       </Button>
                     </div>

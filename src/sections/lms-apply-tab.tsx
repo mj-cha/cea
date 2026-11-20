@@ -117,7 +117,7 @@ export function LmsApplyTab({
                 required
                 value={applyEmail}
                 onChange={(e) => setApplyEmail(e.target.value)}
-                placeholder={`예) gildong.hong@${selectedCorp?.code.replace("-", "")}.co.kr`}
+                placeholder="예) by.yoo@cea.co.kr"
                 className="h-11"
               />
             </div>
@@ -129,7 +129,7 @@ export function LmsApplyTab({
                   required
                   value={applyName}
                   onChange={(e) => setApplyName(e.target.value)}
-                  placeholder="홍길동"
+                  placeholder="예) 유보영"
                   className="h-11"
                 />
               </div>
@@ -139,7 +139,7 @@ export function LmsApplyTab({
                   id="apply-dept"
                   value={applyDept}
                   onChange={(e) => setApplyDept(e.target.value)}
-                  placeholder="예) ESG경영팀 책임"
+                  placeholder="예) ESG컨설팅본부 매니저"
                   className="h-11"
                 />
               </div>

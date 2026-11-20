@@ -20,7 +20,7 @@ export function AdminViewsAccounts({
   onSelectUser: (id: string) => void;
 }) {
   const { courseMedia, corps, users, bulkOpenCourses, updateUserRole } = useLms();
-  const [bulkCorp, setBulkCorp] = useState(corps[0]?.code ?? "samsung-display");
+  const [bulkCorp, setBulkCorp] = useState(corps[0]?.code ?? "cea");
   const [bulkEmails, setBulkEmails] = useState("");
   const [bulkMsg, setBulkMsg] = useState("");
   const [copiedCode, setCopiedCode] = useState("");
@@ -74,7 +74,7 @@ export function AdminViewsAccounts({
               <Textarea
                 value={bulkEmails}
                 onChange={(e) => setBulkEmails(e.target.value)}
-                placeholder="user1@company.co.kr, user2@company.co.kr"
+                placeholder="by.yoo@cea.co.kr, mj.kim@cea.co.kr"
                 className="mt-1.5 min-h-[92px]"
               />
             </div>

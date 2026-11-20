@@ -139,7 +139,7 @@ export function AdminViewsCompletions({ menu }: { menu: AdminMenuId }) {
                             disabled={!row.isCompleted}
                             checked={checked}
                             onChange={() => toggleRow(row.rowKey)}
-                            className="size-4 accent-emerald-500"
+                            className="size-4 accent-blue-600"
                           />
                         </td>
                         <td className="py-3 text-xs">

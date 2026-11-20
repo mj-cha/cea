@@ -1,6 +1,11 @@
-// 종합 ESG 서비스 7개 영역
-// 출처: 대신경제연구소 사업소개(2026-11-17 확인) 내용을 CEA 서비스 문구로 정리.
-// 원 사이트의 담당자·연락처·회사명은 옮기지 않았다.
+// 종합 ESG 컨설팅 7대 핵심 영역 (PwC Sustainability Platform 벤치마킹 · CEA 고도화 모델)
+// 01. RE100 이행 전략 (최상단 배치, 거버넌스 단독 컨설팅 제외)
+// 02. ESG 관리체계 수립
+// 03. TCFD 보고서 발간 및 시나리오 분석
+// 04. Green Procurement 전략 수립
+// 05. Real Value Measurement
+// 06. 책임투자 · ESG 펀드 운영 전략
+// 07. ESG 공시 · 보고서 검증 및 평가 대응
 
 export type Detail = { name: string; feature: string; targets: string[]; effects: string[] };
 export type Service = {
@@ -21,6 +26,12 @@ export type Service = {
 import { envServices } from "./services-env";
 import { climateServices } from "./services-climate";
 import { socialServices } from "./services-social";
+import { reportingServices } from "./services-reporting";
 
-export const services: Service[] = [...envServices, ...climateServices, ...socialServices];
+export const services: Service[] = [
+  ...envServices,
+  ...climateServices,
+  ...socialServices,
+  ...reportingServices,
+];
 export const totalSubServices = services.reduce((n, s) => n + s.areas.length, 0);

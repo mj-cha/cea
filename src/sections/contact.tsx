@@ -102,15 +102,15 @@ export function Contact() {
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="company">회사명</Label>
-              <Input id="company" name="company" required autoComplete="organization" placeholder="예) 주식회사 OO" className="h-11" />
+              <Input id="company" name="company" required autoComplete="organization" placeholder="예) 주식회사 씨이에이(CEA)" className="h-11" />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="name">담당자</Label>
-              <Input id="name" name="name" required autoComplete="name" placeholder="이름 · 직함" className="h-11" />
+              <Input id="name" name="name" required autoComplete="name" placeholder="예) 유보영 매니저" className="h-11" />
             </div>
             <div className="grid gap-2 sm:col-span-2">
               <Label htmlFor="email">이메일</Label>
-              <Input id="email" name="email" type="email" required autoComplete="email" placeholder="name@company.com" className="h-11" />
+              <Input id="email" name="email" type="email" required autoComplete="email" placeholder="예) by.yoo@cea.co.kr" className="h-11" />
             </div>
             <fieldset className="sm:col-span-2">
               <legend className="mb-2.5 text-[13px] font-semibold text-foreground/90">관심 분야 (여러 개 선택)</legend>
