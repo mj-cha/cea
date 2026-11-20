@@ -128,7 +128,7 @@ export function Publications() {
                     variant="outline"
                     size="sm"
                     onClick={() => select(relatedService.id)}
-                    className="gap-1.5 font-bold"
+                    className="min-h-11 gap-1.5 px-3.5 font-bold"
                   >
                     <a href="#services">
                       연계 컨설팅: {relatedService.title} 보기
@@ -142,14 +142,14 @@ export function Publications() {
                     variant="secondary"
                     size="sm"
                     onClick={() => requestConsult(relatedService.title)}
-                    className="font-bold"
+                    className="min-h-11 px-3.5 font-bold"
                   >
                     <a href="#contact">이 주제로 상담 신청</a>
                   </Button>
                 )}
               </div>
 
-              <Button asChild size="sm" className="gap-1.5 font-bold">
+              <Button asChild size="sm" className="min-h-11 gap-1.5 px-3.5 font-bold">
                 <a href={activeItem.externalUrl} target="_blank" rel="noreferrer">
                   원문 리포트 · 출처 바로가기
                   <ExternalLink className="size-3.5" />

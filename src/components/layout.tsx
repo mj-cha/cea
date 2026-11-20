@@ -93,7 +93,7 @@ export function Header() {
             variant="outline"
             size="sm"
             onClick={() => setThemeMode(themeMode === "white" ? "navy" : "white")}
-            className="h-9 gap-1.5 px-2.5 text-xs font-bold"
+            className="size-11 min-h-11 min-w-11 gap-1.5 px-2.5 text-xs font-bold sm:size-9 sm:min-h-9 sm:min-w-9 xl:w-auto"
             title="화이트 / 진한 남색 배경 전환"
           >
             {themeMode === "white" ? (
@@ -157,7 +157,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon-lg"
-            className="md:hidden"
+            className="size-11 min-h-11 min-w-11 sm:size-9 md:hidden"
             aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
             aria-expanded={open}
             onClick={() => setOpen(!open)}
@@ -171,30 +171,30 @@ export function Header() {
         <div className="animate-fade-up border-t bg-background md:hidden">
           <nav className="container flex flex-col py-3" aria-label="모바일 메뉴">
             {nav.map((n) => (
-              <a key={n.href} href={n.href} className="py-3 text-base font-semibold" onClick={() => setOpen(false)}>
+              <a key={n.href} href={n.href} className="min-h-11 py-3 text-base font-semibold" onClick={() => setOpen(false)}>
                 {n.label}
               </a>
             ))}
-            <a href="#lms" className="py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
+            <a href="#lms" className="min-h-11 py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
               나의 온라인 강의실
             </a>
-            <a href="#apply" className="py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
+            <a href="#apply" className="min-h-11 py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
               기업 전용 아이디 등록 폼
             </a>
             {isAdminLoggedIn && (
-              <a href="#admin" className="py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
+              <a href="#admin" className="min-h-11 py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
                 관리자 콘솔 (14대 메뉴)
               </a>
             )}
             <div className="mt-2 flex gap-2">
               {loggedInUser ? (
-                <Button variant="secondary" className="h-10 flex-1 font-bold" onClick={logout}>
+                <Button variant="secondary" className="min-h-11 flex-1 font-bold" onClick={logout}>
                   {loggedInUser.name} 로그아웃
                 </Button>
               ) : (
                 <Button
                   variant="secondary"
-                  className="h-10 flex-1 font-bold"
+                  className="min-h-11 flex-1 font-bold"
                   onClick={() => {
                     setOpen(false);
                     setLoginModalOpen(true);
@@ -203,7 +203,7 @@ export function Header() {
                   로그인 (관리자 · 수강생)
                 </Button>
               )}
-              <Button asChild className="h-10 flex-1 font-semibold">
+              <Button asChild className="min-h-11 flex-1 font-semibold">
                 <a href="#contact" onClick={() => setOpen(false)}>
                   상담 신청
                 </a>

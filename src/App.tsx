@@ -86,7 +86,7 @@ function AppShell() {
                   key={m}
                   type="button"
                   onClick={() => goHash(h)}
-                  className={`rounded-full px-3 py-1 font-bold transition-colors ${
+                  className={`inline-flex min-h-11 max-w-full items-center rounded-full px-3.5 py-1.5 text-left font-bold transition-colors ${
                     mode === m
                       ? "bg-primary text-primary-foreground shadow-xs"
                       : "border bg-background text-muted-foreground hover:text-foreground"
@@ -99,7 +99,7 @@ function AppShell() {
                 <button
                   type="button"
                   onClick={() => setLoginModalOpen(true)}
-                  className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 font-bold text-primary transition-colors hover:bg-primary/20"
+                  className="inline-flex min-h-11 max-w-full items-center rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1.5 text-left font-bold text-primary transition-colors hover:bg-primary/20"
                 >
                   관리자 로그인 (차명진 대표)
                 </button>

@@ -1,4 +1,4 @@
-import { createContext, createElement, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, createElement, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import {
   initialAdmins,
   initialAuditLogs,
@@ -10,38 +10,31 @@ import {
   initialSubscriptions,
   initialUsers,
 } from "@/data/lms-seed";
+import {
+  AUTH_STORAGE_KEY,
+  STORAGE_KEY,
+  SUPABASE_CONFIG,
+  THEME_STORAGE_KEY,
+  computeUpdatedUserProgress,
+  createAuditLog,
+  mergeBulkOpenUsers,
+  nowDate,
+  useLmsCloudSync,
+  type PersistedLmsState,
+  type SyncStatus,
+} from "@/lib/lms-sync";
 import type {
   AdminAuditLog,
   AdminMember,
-  CorpEntity,
-  CourseMediaConfig,
   HostPlanStatus,
   PaymentRecord,
-  QnAItem,
   SubscriptionItem,
   UserAccount,
   UserRole,
   VideoSourceType,
 } from "@/lib/lms-types";
-import { getSupabaseConfig, pullLmsStateFromSupabase, pushLmsStateToSupabase } from "@/lib/supabase-client";
 
-const STORAGE_KEY = "cea_lms_state_v2";
-const AUTH_STORAGE_KEY = "cea_auth_user_v2";
-const THEME_STORAGE_KEY = "cea_theme_mode_v2";
-
-export const SUPABASE_CONFIG = {
-  get url() { return getSupabaseConfig().url; },
-  get anonKey() { return getSupabaseConfig().anonKey; },
-  get isConnected() { return getSupabaseConfig().isConnected; },
-};
-
-interface PersistedLmsState {
-  courseMedia: CourseMediaConfig[];
-  corps: CorpEntity[];
-  users: UserAccount[];
-  auditLogs: AdminAuditLog[];
-  qnas: QnAItem[];
-}
+export { SUPABASE_CONFIG };
 
 interface LmsContextValue extends PersistedLmsState {
   admins: AdminMember[];
@@ -58,7 +51,7 @@ interface LmsContextValue extends PersistedLmsState {
   logout: () => void;
   themeMode: "white" | "navy";
   setThemeMode: (mode: "white" | "navy") => void;
-  syncStatus: "로컬전용" | "진행 중" | "성공" | "실패";
+  syncStatus: SyncStatus;
   syncMessage: string;
   syncToCloud: () => Promise<void>;
   pullFromCloud: () => Promise<void>;
@@ -83,11 +76,6 @@ interface LmsContextValue extends PersistedLmsState {
 }
 
 const LmsContext = createContext<LmsContextValue | null>(null);
-const nowDate = () => new Date().toISOString().slice(0, 10);
-const nowDateTime = () => {
-  const d = new Date();
-  return `${d.toISOString().slice(0, 10)} ${d.toTimeString().slice(0, 5)}`;
-};
 
 export function LmsProvider({ children }: { children: ReactNode }) {
   const [courseMedia, setCourseMedia] = useState(initialCourseMedia);
@@ -105,17 +93,24 @@ export function LmsProvider({ children }: { children: ReactNode }) {
   const [themeMode, setThemeMode] = useState<"white" | "navy">(() =>
     localStorage.getItem(THEME_STORAGE_KEY) === "navy" ? "navy" : "white",
   );
-  const [configTick, setConfigTick] = useState(0);
-  const [syncStatus, setSyncStatus] = useState<"로컬전용" | "진행 중" | "성공" | "실패">(() =>
-    getSupabaseConfig().isConnected ? "진행 중" : "로컬전용",
-  );
-  const [syncMessage, setSyncMessage] = useState("");
-  const isInitialLoaded = useRef(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", themeMode === "navy");
     localStorage.setItem(THEME_STORAGE_KEY, themeMode);
   }, [themeMode]);
+
+  const applyPersisted = useCallback((parsed: Partial<PersistedLmsState>) => {
+    if (parsed.courseMedia?.length) setCourseMedia(parsed.courseMedia);
+    if (parsed.corps?.length) setCorps(parsed.corps);
+    if (parsed.users?.length) setUsers(parsed.users);
+    if (parsed.auditLogs?.length) setAuditLogs(parsed.auditLogs);
+    if (parsed.qnas?.length) setQnas(parsed.qnas);
+  }, []);
+
+  const { syncStatus, syncMessage, syncToCloud, pullFromCloud, refreshSupabaseConfig } = useLmsCloudSync(
+    { courseMedia, corps, users, auditLogs, qnas },
+    applyPersisted,
+  );
 
   const loggedInUser = users.find((u) => u.email.toLowerCase() === loggedInEmail.toLowerCase()) ?? null;
   const isAdminLoggedIn = Boolean(
@@ -136,12 +131,7 @@ export function LmsProvider({ children }: { children: ReactNode }) {
     setLoginModalOpen(false);
     const adminFlag = Boolean(userObj.role === "관리자" || matchedAdmin);
     window.location.hash = adminFlag ? "#admin" : "#lms";
-    return {
-      ok: true,
-      isAdmin: adminFlag,
-      user: userObj,
-      message: `${userObj.name}님 로그인 완료`,
-    };
+    return { ok: true, isAdmin: adminFlag, user: userObj, message: `${userObj.name}님 로그인 완료` };
   };
 
   const logout = () => {
@@ -150,91 +140,8 @@ export function LmsProvider({ children }: { children: ReactNode }) {
     if (window.location.hash.startsWith("#admin")) window.location.hash = "#top";
   };
 
-  const applyPersisted = useCallback((parsed: Partial<PersistedLmsState>) => {
-    if (parsed.courseMedia?.length) setCourseMedia(parsed.courseMedia);
-    if (parsed.corps?.length) setCorps(parsed.corps);
-    if (parsed.users?.length) setUsers(parsed.users);
-    if (parsed.auditLogs?.length) setAuditLogs(parsed.auditLogs);
-    if (parsed.qnas?.length) setQnas(parsed.qnas);
-  }, []);
-
-  const pullFromCloud = useCallback(async () => {
-    if (!getSupabaseConfig().isConnected) {
-      setSyncStatus("로컬전용");
-      return;
-    }
-    setSyncStatus("진행 중");
-    const res = await pullLmsStateFromSupabase<PersistedLmsState>();
-    if (!res.ok) {
-      setSyncStatus("실패");
-      setSyncMessage(`실패: ${res.error || "조회 오류"}`);
-      return;
-    }
-    if (res.data) applyPersisted(res.data);
-    setSyncStatus("성공");
-    setSyncMessage("성공: Supabase 클라우드 동기화 완료");
-  }, [applyPersisted]);
-
-  const syncToCloud = useCallback(async () => {
-    if (!getSupabaseConfig().isConnected) {
-      setSyncStatus("로컬전용");
-      return;
-    }
-    setSyncStatus("진행 중");
-    const res = await pushLmsStateToSupabase({ courseMedia, corps, users, auditLogs, qnas });
-    setSyncStatus(res.ok ? "성공" : "실패");
-    setSyncMessage(res.ok ? `성공: 동기화 완료 (${nowDateTime()})` : `실패: ${res.error || "저장 오류"}`);
-  }, [courseMedia, corps, users, auditLogs, qnas]);
-
-  const refreshSupabaseConfig = useCallback(() => setConfigTick((t) => t + 1), []);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) applyPersisted(JSON.parse(raw));
-    } catch {
-      // 기본 시드 유지
-    }
-    isInitialLoaded.current = true;
-  }, [applyPersisted]);
-
-  useEffect(() => {
-    if (getSupabaseConfig().isConnected) void pullFromCloud();
-    else {
-      setSyncStatus("로컬전용");
-      setSyncMessage("");
-    }
-  }, [configTick, pullFromCloud]);
-
-  useEffect(() => {
-    if (!isInitialLoaded.current) return;
-    const payload: PersistedLmsState = { courseMedia, corps, users, auditLogs, qnas };
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    } catch {
-      // 무시
-    }
-    if (getSupabaseConfig().isConnected) {
-      const timer = setTimeout(() => {
-        void pushLmsStateToSupabase(payload).then((res) => setSyncStatus(res.ok ? "성공" : "실패"));
-      }, 400);
-      return () => clearTimeout(timer);
-    }
-  }, [courseMedia, corps, users, auditLogs, qnas]);
-
   const addLog = (actionType: AdminAuditLog["actionType"], target: string, detail: string) => {
-    setAuditLogs((prev) => [
-      {
-        id: `log-${Date.now()}`,
-        adminId: "adm-1",
-        adminName: "차명진 대표 (총괄)",
-        actionType,
-        target,
-        detail,
-        createdAt: nowDateTime(),
-      },
-      ...prev,
-    ]);
+    setAuditLogs((prev) => [createAuditLog(actionType, target, detail), ...prev]);
   };
 
   const applyByCorpForm: LmsContextValue["applyByCorpForm"] = ({ corpCode, email, name, department }) => {
@@ -300,33 +207,7 @@ export function LmsProvider({ children }: { children: ReactNode }) {
     const emails = rawEmails.split(/[\n,;]+/).map((s) => s.trim().toLowerCase()).filter((s) => s.includes("@"));
     if (!corp || emails.length === 0) return 0;
     const openIds = courseIds.length > 0 ? courseIds : corp.allowedCourseIds;
-    setUsers((prev) => {
-      const next = [...prev];
-      for (const em of emails) {
-        const idx = next.findIndex((u) => u.email.toLowerCase() === em);
-        if (idx >= 0) {
-          const merged = Array.from(new Set([...next[idx].enrolledCourseIds, ...openIds]));
-          next[idx] = { ...next[idx], enrolledCourseIds: merged, corpCode: corp.code, corpName: corp.name };
-        } else {
-          next.unshift({
-            id: `usr-${Math.floor(1000 + Math.random() * 9000)}`,
-            email: em,
-            name: em.split("@")[0],
-            corpCode: corp.code,
-            corpName: corp.name,
-            department: "ESG컨설팅본부",
-            role: "수강생",
-            joinedAt: nowDate(),
-            status: "활성",
-            enrolledCourseIds: [...openIds],
-            progress: {},
-            completedAt: {},
-            certNumbers: {},
-          });
-        }
-      }
-      return next;
-    });
+    setUsers((prev) => mergeBulkOpenUsers(prev, emails, corp, openIds));
     addLog("강의일괄오픈", `${corp.name} (${emails.length}명)`, `관리자 일괄 등록으로 ${openIds.length}개 과정 오픈`);
     return emails.length;
   };
@@ -334,19 +215,7 @@ export function LmsProvider({ children }: { children: ReactNode }) {
   const updateProgress = (userId: string, courseId: string, nextPct: number) => {
     const clamped = Math.max(0, Math.min(100, Math.round(nextPct)));
     const passRate = courseMedia.find((m) => m.courseId === courseId)?.passRate ?? 80;
-    setUsers((prev) =>
-      prev.map((u) => {
-        if (u.id !== userId) return u;
-        const nextProgress = { ...u.progress, [courseId]: clamped };
-        const nextCompleted = { ...u.completedAt };
-        const nextCerts = { ...u.certNumbers };
-        if (clamped >= passRate && !nextCompleted[courseId]) {
-          nextCompleted[courseId] = nowDate();
-          nextCerts[courseId] = `CEA-2026-${Math.floor(1100 + Math.random() * 8900)}`;
-        }
-        return { ...u, progress: nextProgress, completedAt: nextCompleted, certNumbers: nextCerts };
-      }),
-    );
+    setUsers((prev) => computeUpdatedUserProgress(prev, userId, courseId, clamped, passRate));
   };
 
   const updateCourseMedia: LmsContextValue["updateCourseMedia"] = (courseId, patch) => {
@@ -388,39 +257,11 @@ export function LmsProvider({ children }: { children: ReactNode }) {
     LmsContext.Provider,
     {
       value: {
-        courseMedia,
-        corps,
-        users,
-        admins,
-        auditLogs,
-        subscriptions,
-        payments,
-        qnas,
-        hostPlans,
-        activeUserId,
-        setActiveUserId,
-        loggedInUser,
-        isAdminLoggedIn,
-        loginModalOpen,
-        setLoginModalOpen,
-        loginWithEmail,
-        logout,
-        themeMode,
-        setThemeMode,
-        syncStatus,
-        syncMessage,
-        syncToCloud,
-        pullFromCloud,
-        refreshSupabaseConfig,
-        applyByCorpForm,
-        bulkOpenCourses,
-        updateProgress,
-        updateCourseMedia,
-        updateUserRole,
-        toggleCorpAutoOpen,
-        answerQnA,
-        logBatchCertificatePrint,
-        resetDemoData,
+        courseMedia, corps, users, admins, auditLogs, subscriptions, payments, qnas, hostPlans,
+        activeUserId, setActiveUserId, loggedInUser, isAdminLoggedIn, loginModalOpen, setLoginModalOpen,
+        loginWithEmail, logout, themeMode, setThemeMode, syncStatus, syncMessage, syncToCloud,
+        pullFromCloud, refreshSupabaseConfig, applyByCorpForm, bulkOpenCourses, updateProgress,
+        updateCourseMedia, updateUserRole, toggleCorpAutoOpen, answerQnA, logBatchCertificatePrint, resetDemoData,
       },
     },
     children,

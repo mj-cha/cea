@@ -29,7 +29,7 @@
 
 ---
 
-## 3. 분업 작업 지시서 (W3 · W4)
+## 3. 분업 작업 지시서 (W3 · W4 · W5)
 
 ### [W3] UI · 반응형 · 교육/상담 동선 개선 (담당: Antigravity)
 - **5줄 텍스트 설계안**:
@@ -49,6 +49,16 @@
 - **하지 말 것**: 파일당 15KB 상한 초과 금지(`services-env.ts`가 15KB를 넘으면 파일 분리), 지어낸 허위 실적 숫자·과장 문구 사용 금지.
 - **완료 조건**: 01·02번 탭에서 '컨설팅 상세' 아코디언 정상 표시, 상담 신청 제출 시 요약 안내 및 메일/복사 정상 동작, `npm run build` 및 `npm run audit:cto` FAIL 0.
 
+### [W5] 모바일 390px 가로 넘침 해소 · 44px 터치 보강 · `lms-store.ts` 15KB 분리 · 스튜디오 보강 (담당: Antigravity)
+- **5줄 텍스트 설계안**:
+  1. `lms-portal.tsx`: `390×844`에서 가로 넘침(`180px`)을 유발하던 `TabsList`를 모바일 1열 스택으로 전환하고 수강생 `<select>` 폭 제한(`w-full max-w-full min-w-0`) 및 주요 액션 버튼 `min-h-11`(`44px`)을 적용한다.
+  2. `layout.tsx`, `App.tsx`, `services.tsx`, `publications.tsx`: 모바일 헤더 메뉴·테마 버튼, 상단 모드 전환 바, 상담 신청·원문 보기 CTA에 `min-h-11`(`44px`) 터치 높이를 보강한다.
+  3. `lms-store.ts`(`16.2KB`): 클라우드 동기화·스토리지·헬퍼 로직을 `src/lib/lms-sync.ts`로 분리해 기존 export 시그니처를 유지하면서 전 파일 15KB 상한을 준수한다.
+  4. `studio/screens.config.json` 및 `CNAME`: 공개 그룹에 `#publications`(`지속가능성 발간물`) 화면을 추가해 12개 화면 구성을 완성하고, 미설정 도메인 리다이렉트 방지를 위해 `public/CNAME`을 `docs/CNAME.pending`으로 안전 보관한다.
+- **범위**: `docs/WORK-QUEUE.md`, `docs/CNAME.pending`, `src/sections/lms-portal.tsx`, `src/components/layout.tsx`, `src/App.tsx`, `src/sections/services.tsx`, `src/sections/publications.tsx`, `src/lib/lms-store.ts`, `src/lib/lms-sync.ts`, `studio/screens.config.json`
+- **하지 말 것**: 새로운 npm 패키지 추가 금지, 소스 파일 15KB 상한 초과 금지, `gosutem` 폴더 수정 금지, `main`·`gh-pages` 브랜치 push/머지 금지.
+- **완료 조건**: `npm run build` 오류 0(`dist/CNAME` 미생성), `cto-audit.mjs --codex` FAIL 0·파일 크기 WARN 0, `390×844` 및 `1440×900` 전 화면 가로 스크롤 `0px`·콘솔 오류 0·스튜디오 12개 화면 로드 확인.
+
 ---
 
 ## 4. 현재 작업 큐 상태
@@ -60,9 +70,10 @@
 | **W3** | UI · 반응형 · 동선 | 모바일 7개 탭 가시성 개선, 교육 카드 클릭 동선, 상담 관심분야 연동 | Antigravity | **완료** |
 | **W4** | 데이터 · 상담 폼 | 01·02번 서비스 `details` 데이터 채우기 및 상담 신청 폼 접수 동작 완성 | Antigravity | **완료** |
 | **S1** | 검수 스튜디오 `/__studio` | 고수템과 동일한 공통 `studio/` v1.0 3단 뷰어(1440/390 전환·블록 고르기·`STUDIO-QUEUE` 고치기 큐·테마 3종) 이식 (`src/**` 수정 0, 빌드 미포함) | Antigravity | **완료** |
+| **W5** | 모바일 반응형 · 15KB 분리 · 스튜디오 | 390px 가로 넘침(`180px→0px`) 해소, 44px 터치 보강, `lms-store.ts` 15KB 분리, `#publications` 스튜디오 추가, `CNAME.pending` 보관 | Antigravity | **완료** |
 
 ---
 
 ## [교차 검증 결과 (cto-audit.mjs)]
-- **판정**: **통과 (PASS)**
-- **정량 감사 요약**: FAIL 0건 / WARN 0건 / PASS 7건 (`WORK-QUEUE.md` 필수 3요소 및 5줄 텍스트 설계안 준수 확인)
+- **판정**: **통과 (PASS)** — `cto-audit.mjs --spec docs/WORK-QUEUE.md --codex --timeout-ms 60000` 실행 완료 (응답 29,861ms / 제한 60,000ms)
+- **정량 감사 요약**: FAIL 0건 / 파일 크기 WARN 0건 (`lms-store.ts` 16,213B → 11,519B + `lms-sync.ts` 분리 완료, 전 소스 파일 15KB 이하, `dist/CNAME` 미생성, `390×844`·`1440×900` 전 화면 가로 넘침 `0px` 및 스튜디오 12개 화면 로드 검증 완료)

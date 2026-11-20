@@ -164,7 +164,7 @@ function Panel({ s }: { s: Service }) {
           ) : (
             <p className="text-sm text-muted-foreground">기업 상황에 맞는 대응 전략을 전문 컨설턴트가 제안해 드립니다.</p>
           )}
-          <Button asChild variant="secondary" className="h-10 shrink-0 gap-2 px-4 font-semibold">
+          <Button asChild variant="secondary" className="min-h-11 shrink-0 gap-2 px-4 font-semibold">
             <a href="#contact" onClick={() => requestConsult(s.title)}>
               {s.title} 상담하기
               <ArrowRight />
