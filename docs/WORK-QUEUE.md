@@ -71,6 +71,18 @@
 | **W4** | 데이터 · 상담 폼 | 01·02번 서비스 `details` 데이터 채우기 및 상담 신청 폼 접수 동작 완성 | Antigravity | **완료** |
 | **S1** | 검수 스튜디오 `/__studio` | 고수템과 동일한 공통 `studio/` v1.0 3단 뷰어(1440/390 전환·블록 고르기·`STUDIO-QUEUE` 고치기 큐·테마 3종) 이식 (`src/**` 수정 0, 빌드 미포함) | Antigravity | **완료** |
 | **W5** | 모바일 반응형 · 15KB 분리 · 스튜디오 | 390px 가로 넘침(`180px→0px`) 해소, 44px 터치 보강, `lms-store.ts` 15KB 분리, `#publications` 스튜디오 추가, `CNAME.pending` 보관 | Antigravity | **완료** |
+| **W6** | 스튜디오 검수 17건 일괄 수리 | 상단 메뉴 화면 전환형 개편, 공공 지원사업·정책 아카이브(회계법인 탭 관리자 전용화), FAQ 전문화·카톡 문의·유보영/개인메일 배제, 헤더·푸터·히어로·LMS 군더더기 및 줄바꿈 전면 정비 | Antigravity | **완료** |
+
+### [W6] 스튜디오 검수 요청 17건 일괄 수리 지시서 (담당: Antigravity)
+- **5줄 텍스트 설계안**:
+  1. **화면 전환형 내비게이션 & 헤더·푸터 정비(#2·#5·#7·#9)**: 긴 스크롤 나열 대신 상단 메뉴 클릭 시 섹션별 독립 화면(`#top`·`#services`·`#publications`·`#education`·`#process`·`#faq`·`#contact`·`#lms`·`#admin`)으로 즉시 전환하고, 중복 상단 띠 제거·헤더 메뉴 줄바꿈 방지(`whitespace-nowrap`)·계정 버튼 폭 제한(`관리자` 등 단축)·푸터 문장 줄바꿈을 적용한다.
+  2. **공공 지원사업·정책 모아보기 개편(#1)**: `#publications`를 헤이제임스 스타일의 **정부·공공 지원사업 공고 & 공공 연구 아카이브**(환경산업기술원 KEITI·에너지경제연구원 KEEI·한국환경공단·중기부 등 최근 1년치 `2025.12~2026.11`, 접수상태·추천사유·기관 필터)로 개편하고, 기존 4대 회계법인·로펌 탭은 관리자 로그인 시에만 노출한다.
+  3. **FAQ 구체화 · 환급과정 설계 · 카톡 문의 · 예시 정화(#3·#4)**: 컨설팅 시 교육 필수 포함/단독 수강 안내, 고용보험·KPC 환급과정 요건(`docs/HRD-REFUND-DESIGN.md`), 보고서 소요기간(연례 6개월·최초 연말 착수·영문 +1개월·디지털 +3개월), KSSB 법정공시 로드맵(2028년 10조·2029년 5조·2030년 2조)을 구체화하고, 카톡 문의 버튼 추가 및 `유보영` 전면 제거(`OOO 매니저`·업무용 기업 메일 검증)를 적용한다.
+  4. **LMS 강의실·관리자 군더더기 제거 및 수료율 표기(#6·#8)**: `14대 운영 모듈`, `YouTube/MP4 소스`, `Supabase/Typeform` 등 내부 개발 용어를 걷어내고, 수료 완료 과정에 `수료 완료 (100%)` 퍼센테이지를 명확히 표기한다.
+  5. **메인 히어로·홈 가독성 및 독창성 정비(#10~#17)**: `익히고,` 뒤 줄바꿈 등 전 구간 `break-keep` 호흡 정리, 핵심 안내 상단 최우선 배치·폰트 확대·하단 배너 가운데 정렬 및 실무형 문구 교체, 중복 리스트(`WhyNow`) 및 하단 실적 숫자 `<dl>` 제거, 타 연구소(`종합 ESG 서비스` 등) 유사 문구 전면 교체를 수행한다.
+- **범위**: `docs/WORK-QUEUE.md`, `docs/HRD-REFUND-DESIGN.md`, `src/App.tsx`, `src/components/layout.tsx`, `src/components/login-modal.tsx`, `src/lib/service-context.tsx`, `src/sections/hero.tsx`, `src/sections/why-now.tsx`, `src/sections/services.tsx`, `src/sections/education.tsx`, `src/sections/publications.tsx`, `src/sections/publications-admin-board.tsx`, `src/sections/faq.tsx`, `src/sections/contact.tsx`, `src/sections/lms-portal.tsx`, `src/sections/lms-apply-tab.tsx`, `src/sections/admin-console.tsx`, `src/sections/admin-views-accounts.tsx`, `src/data/publications-public.ts`, `src/data/publications-public-more.ts`, `src/data/lms-seed.ts`, `src/data/services.ts`, `src/data/services-social.ts`, `src/data/services-reporting.ts`, `src/data/screens-config.ts`, `studio/screens.config.json`
+- **하지 말 것**: 새 npm 패키지 설치 금지, 소스 파일 15KB(15,360B) 초과 금지, 개인 실명(`유보영` 등) 및 타 연구소 모방 문구 잔존 금지, `main` 브랜치 직접 push/머지 금지.
+- **완료 조건**: 17개 스튜디오 요청 항목 100% 반영, `유보영` 검색 0건, 전 소스 파일 15KB 이하, `npm run build` 오류 0, `cto-audit.mjs --codex` FAIL 0, `390×844`·`1440×900` 전 화면 가로 스크롤 `0px` 및 탭 전환·콘솔 오류 `0건` 실측 확인.
 
 ---
 

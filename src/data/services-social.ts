@@ -58,8 +58,8 @@ export const socialServices: Service[] = [
     ],
     strengths: [
       {
-        title: "글로벌 표준(TIMM · VBA · IFVI)과 한국형 공인 계수의 결합",
-        desc: "PwC의 통합 임팩트 측정(TIMM) 철학과 국제 가치평가 연합(VBA) 방법론에 한국 정부·국책연구기관의 실증 단가를 결합해 공신력을 극대화합니다.",
+        title: "국제 임팩트 표준(VBA · IFVI)과 국내 공인 계수의 결합",
+        desc: "국제 가치평가 연합(VBA·IFVI) 방법론에 한국 정부·국책연구기관의 실증 단가를 결합해 외부 공시 신뢰도를 극대화합니다.",
       },
       {
         title: "과대계상을 배제한 보수적·검증 가능한 산식",
@@ -90,12 +90,12 @@ export const socialServices: Service[] = [
   {
     id: "responsible-investment",
     no: "06",
-    title: "책임투자 · ESG 펀드 운영 전략",
-    en: "Responsible Investment: Investing in Good Growth Globally",
-    stakeholder: "기관투자자 · 운용사 · PEF · 금융",
+    title: "K-택소노미 · 책임투자 및 ESG 금융 전략",
+    en: "K-Taxonomy, Transition Finance & Responsible Investment",
+    stakeholder: "금융기관 · 연기금 · 운용사 · PEF",
     summary:
-      "금융기관·연기금·자산운용사·PEF(사모펀드)를 위한 책임투자(Responsible Investment) 정책 수립, 투자 대상 기업 ESG 실사(Due Diligence), ESG 펀드 상품 설계 및 포트폴리오 임팩트·금융배출량(PCAF) 관리를 자문합니다.",
-    why: "글로벌 자본시장이 '지속가능한 성장에 투자하는 책임투자(Investing in good growth globally)'로 재편되면서, 투자 의사결정 전 과정(Sourcing → Due Diligence → Value-up → Exit)에 ESG 리스크와 기회를 통합하는 역량이 펀드 수익률과 LP 자금 조달(Fundraising)을 결정짓고 있습니다.",
+      "한국형 녹색분류체계(K-택소노미) 적합성 판단 및 전환금융 자문부터 기관투자자·운용사·PEF 책임투자(PRI) 체계 구축, 투자 전 ESG 실사(Due Diligence), 금융배출량(PCAF) 산정까지 통합 지원합니다.",
+    why: "녹색여신·전환금융 기준 강화와 기관투자자의 수탁자책임 확대에 따라, 자금 조달과 투자 심사 전 과정(Sourcing → Due Diligence → Value-up → Exit)에 택소노미 적합성과 ESG 리스크를 정량 반영하는 역량이 핵심 경쟁력이 되고 있습니다.",
     purposes: [
       {
         title: "글로벌 스탠다드(UN PRI · 스튜어드십 코드) 부합 책임투자 체계 구축",

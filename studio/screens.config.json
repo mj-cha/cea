@@ -14,16 +14,16 @@
   "screens": [
     { "route": "#top", "title": "홈 · 메인 히어로", "group": "public", "status": "있음", "required": true, "desc": "핵심 슬로건과 주요 서비스 진입" },
     { "route": "#why-now", "title": "도입 배경 (Why Now)", "group": "public", "status": "있음", "desc": "공급망 실사 및 ESG 의무화 대응 배경" },
-    { "route": "#services", "title": "7대 ESG 컨설팅 메뉴", "group": "public", "status": "있음", "desc": "거버넌스·공시·탄소 등 컨설팅 상세 탭" },
-    { "route": "#publications", "title": "지속가능성 발간물", "group": "public", "status": "있음", "desc": "4대 회계법인·로펌 ESG 리포트 및 영상 브리핑" },
+    { "route": "#services", "title": "분야별 ESG 자문 메뉴", "group": "public", "status": "있음", "desc": "RE100·공시·탄소·택소노미 등 자문 상세 탭" },
+    { "route": "#publications", "title": "정부지원사업 · 정책 아카이브", "group": "public", "status": "있음", "desc": "공공기관 지원사업 공고 및 국책연구원 발간물 모아보기" },
     { "route": "#education", "title": "직무·직급별 교육 과정", "group": "public", "status": "있음", "desc": "임원·실무자·협력사 맞춤 커리큘럼" },
     { "route": "#process", "title": "도입 · 진행 절차", "group": "public", "status": "있음", "desc": "사전 진단부터 결과 리포트까지 단계 안내" },
     { "route": "#fit", "title": "추천 기업 유형", "group": "public", "status": "있음", "desc": "기업 규모·상황별 맞춤 도입 안내" },
     { "route": "#faq", "title": "자주 묻는 질문", "group": "public", "status": "있음", "desc": "수료증·과정 운영·비용 안내" },
     { "route": "#contact", "title": "도입 상담 · 견적 문의", "group": "public", "status": "있음", "desc": "관심 분야 연동 상담 신청 폼" },
-    { "route": "#apply", "title": "기업 전용 아이디 등록 폼", "group": "member", "status": "있음", "required": true, "desc": "기업 코드 기반 수강 계정 등록·강의 자동 오픈" },
-    { "route": "#lms", "title": "나의 온라인 강의실", "group": "service", "status": "있음", "required": true, "desc": "수강생 진도율 학습 및 수료증 발급" },
-    { "route": "#admin", "title": "관리자 콘솔 (14대 운영 모듈)", "group": "admin", "status": "있음", "required": true, "desc": "대시보드·콘텐츠·법인·이수율·수료증 일괄출력·매출 관리" }
+    { "route": "#apply", "title": "기업 전용 아이디 등록", "group": "member", "status": "있음", "required": true, "desc": "기업 코드 기반 수강 계정 등록·과정 오픈" },
+    { "route": "#lms", "title": "나의 온라인 강의실", "group": "service", "status": "있음", "required": true, "desc": "수강생 진도율(100%) 학습 및 수료증 발급" },
+    { "route": "#admin", "title": "관리자 콘솔", "group": "admin", "status": "있음", "required": true, "desc": "대시보드·과정·법인·이수율·수료증 일괄출력·매출 관리" }
   ],
   "themes": [
     {

@@ -179,15 +179,18 @@ function Panel({ s }: { s: Service }) {
 export function Services() {
   const { selected, select } = useService();
   return (
-    <section id="services" className="border-t py-20 md:py-28">
-      <div className="container">
-        <div className="mb-12 grid gap-6 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-end md:gap-16">
+    <section id="services" className="py-14 md:py-22">
+      <div className="container break-keep">
+        <div className="mb-10 grid gap-6 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-end md:gap-16">
           <div>
-            <p className="mb-4 text-[13px] font-semibold text-primary">분야별 컨설팅</p>
-            <h2 className="text-[32px] leading-tight font-extrabold tracking-[-0.03em] md:text-[44px]">종합 ESG 서비스</h2>
+            <p className="mb-3 text-[13px] font-semibold text-primary">분야별 전문 자문 (컨설팅 시 담당자 필수 교육 포함)</p>
+            <h2 className="text-[32px] leading-tight font-extrabold tracking-[-0.03em] md:text-[42px]">
+              핵심 ESG 자문 · 실무 구축 영역
+            </h2>
           </div>
-          <p className="text-[16px] leading-relaxed text-muted-foreground">
-            7개 전문 영역으로 기업의 ESG 경영 전 과정을 지원합니다. 영역을 고르면 필요한 이유, 세부 서비스, 수행 절차를 한눈에 확인할 수 있어요.
+          <p className="text-[16px] leading-[1.7] text-muted-foreground">
+            기후·RE100 전환부터 KSSB 의무공시, 공급망 탄소·실사, 녹색금융·택소노미까지 기업 현안에 맞춘 실무 자문을 제공합니다.
+            <br />모든 컨설팅 과업에는 담당자 내재화를 위한 맞춤 실무 교육이 함께 포함됩니다.
           </p>
         </div>
 

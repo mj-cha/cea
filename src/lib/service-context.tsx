@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { services } from "@/data/services";
 
-/** 종합 ESG 서비스 탭 선택 상태 및 상담 신청 관심 분야 연동 컨텍스트 */
+/** 분야별 ESG 자문 탭 선택 상태 및 상담 신청 관심 분야 연동 컨텍스트 */
 type Ctx = {
   selected: string;
   select: (id: string) => void;

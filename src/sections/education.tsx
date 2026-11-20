@@ -21,19 +21,20 @@ export function Education() {
   const serviceName = (id: string) => services.find((s) => s.id === id)?.title ?? "";
 
   return (
-    <section id="education" className="border-t py-20 md:py-28">
-      <div className="container">
+    <section id="education" className="py-14 md:py-22">
+      <div className="container break-keep">
         <div className="mb-10 grid gap-6 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-end md:gap-16">
           <div>
-            <p className="mb-4 text-[13px] font-semibold text-primary">실무 온라인 아카데미</p>
-            <h2 className="text-[32px] leading-tight font-extrabold tracking-[-0.03em] md:text-[44px]">
-              온라인 교육으로
+            <p className="mb-3 text-[13px] font-semibold text-primary">실무 온라인 아카데미 (단독 수강 가능 · 기업 단체 환급 연계)</p>
+            <h2 className="text-[32px] leading-tight font-extrabold tracking-[-0.03em] md:text-[42px]">
+              실무자가 직접 이해하는{" "}
               <br />
-              먼저 공통 언어를
+              온라인 ESG 직무 과정
             </h2>
           </div>
-          <p className="text-[16px] leading-relaxed text-muted-foreground">
-            컨설팅 결과물이 회사에 남으려면 실무자가 기준을 이해하고 있어야 합니다. 영역별 과정을 원하는 시간에 듣고, 라이브 Q&A에서 우리 회사 상황을 직접 물어보세요.
+          <p className="text-[16px] leading-[1.7] text-muted-foreground">
+            교육만 단독으로 수강하실 수도 있고, 컨설팅 진행 시에는 담당자 필수 과정으로 함께 편성됩니다.
+            <br />기업 단체 수강 시 사업주 직업능력개발훈련(고용보험 환급) 및 바우처 연계 설계를 지원합니다.
           </p>
         </div>
 

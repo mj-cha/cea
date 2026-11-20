@@ -41,7 +41,7 @@ export function LoginModal() {
             />
             <div>
               <CardTitle className="text-base font-extrabold">주식회사 씨이에이(CEA) 로그인</CardTitle>
-              <CardDescription className="text-xs">www.cea.co.kr 통합 인증 시스템</CardDescription>
+              <CardDescription className="text-xs">기업 수강생 · 관리자 인증</CardDescription>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={() => setLoginModalOpen(false)} aria-label="닫기">
@@ -53,7 +53,7 @@ export function LoginModal() {
           <form onSubmit={handleSubmit} className="space-y-3.5">
             <div className="space-y-1.5">
               <Label htmlFor="login-email" className="text-xs font-bold">
-                아이디 (회사 이메일)
+                아이디 (업무용 회사 이메일)
               </Label>
               <Input
                 id="login-email"
@@ -61,7 +61,7 @@ export function LoginModal() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@cea.co.kr"
+                placeholder="esg@company.co.kr"
                 className="h-10"
               />
             </div>
@@ -86,9 +86,7 @@ export function LoginModal() {
           </form>
 
           <div className="space-y-2 border-t pt-4">
-            <p className="text-xs font-bold text-muted-foreground">
-              빠른 계정 전환 (클릭 시 해당 권한 화면으로 즉시 이동):
-            </p>
+            <p className="text-xs font-bold text-muted-foreground">시연용 빠른 계정 선택:</p>
             <button
               type="button"
               onClick={() => loginWithEmail("admin@cea.co.kr")}
@@ -97,10 +95,8 @@ export function LoginModal() {
               <div className="flex items-center gap-2.5">
                 <ShieldCheck className="size-4 shrink-0 text-primary" />
                 <div>
-                  <p className="font-extrabold text-foreground">차명진 대표 · 총괄관리자 (admin@cea.co.kr)</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    주식회사 씨이에이(CEA) 경영총괄 → 로그인 즉시 관리자 페이지 오픈
-                  </p>
+                  <p className="font-extrabold text-foreground">관리자 (admin@cea.co.kr)</p>
+                  <p className="text-[11px] text-muted-foreground">관리자 콘솔 · 수료증 일괄 출력 권한</p>
                 </div>
               </div>
               <Badge className="shrink-0">관리자</Badge>
@@ -108,16 +104,14 @@ export function LoginModal() {
 
             <button
               type="button"
-              onClick={() => loginWithEmail("by.yoo@cea.co.kr")}
+              onClick={() => loginWithEmail("manager@cea.co.kr")}
               className="flex w-full items-center justify-between rounded-xl border bg-card p-3 text-left text-xs transition-colors hover:bg-muted/50"
             >
               <div className="flex items-center gap-2.5">
                 <UserCheck className="size-4 shrink-0 text-primary" />
                 <div>
-                  <p className="font-bold text-foreground">유보영 매니저 · 수강생 (by.yoo@cea.co.kr)</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    주식회사 씨이에이(CEA) ESG컨설팅본부 → 온라인 강의실 오픈
-                  </p>
+                  <p className="font-bold text-foreground">OOO 매니저 · 수강생 (manager@cea.co.kr)</p>
+                  <p className="text-[11px] text-muted-foreground">온라인 강의실 수강 · 수료증 확인</p>
                 </div>
               </div>
               <Badge variant="outline" className="shrink-0">
@@ -140,15 +134,15 @@ export function AdminLoginGate() {
           <div className="mx-auto grid size-12 place-items-center rounded-full bg-primary/10 text-primary">
             <Lock className="size-6" />
           </div>
-          <CardTitle className="text-2xl font-extrabold">관리자 전용 페이지입니다</CardTitle>
-          <CardDescription>
-            이 화면(14대 운영 콘솔 및 수료증 일괄 출력)은 <strong>주식회사 씨이에이(CEA) 관리자 계정</strong>으로 로그인했을 때만 표시됩니다.
+          <CardTitle className="text-2xl font-extrabold">관리자 전용 화면입니다</CardTitle>
+          <CardDescription className="break-keep">
+            기업 수강 운영 관리 및 수료증 일괄 출력은 <strong>관리자 계정</strong>으로 로그인했을 때만 표시됩니다.
           </CardDescription>
         </CardHeader>
         <CardContent className="mt-4 flex flex-col items-center justify-center gap-3 px-6 sm:flex-row">
           <Button onClick={() => loginWithEmail("admin@cea.co.kr")} className="h-11 gap-2 px-6 font-bold">
             <ShieldCheck className="size-4" />
-            차명진 대표(admin@cea.co.kr) 관리자 로그인
+            관리자 로그인
           </Button>
           <Button variant="outline" onClick={() => setLoginModalOpen(true)} className="h-11 font-semibold">
             다른 계정으로 로그인

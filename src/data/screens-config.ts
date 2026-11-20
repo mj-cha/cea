@@ -25,8 +25,8 @@ export interface StudioThemePreset {
 export const CEA_SCREENS: ScreenItem[] = [
   { id: "hero", group: "공개 화면", title: "홈 · 메인 히어로", hash: "#top", status: "있음", desc: "CEA 핵심 슬로건과 도입 지표 요약", featureKey: "core" },
   { id: "why-now", group: "공개 화면", title: "도입 배경 (Why Now)", hash: "#why-now", status: "있음", desc: "공급망 ESG 실사 및 법정의무 대응 배경", featureKey: "core" },
-  { id: "services", group: "공개 화면", title: "7대 ESG 컨설팅 (RE100·TCFD 등)", hash: "#services", status: "있음", desc: "RE100·ESG관리체계·TCFD·녹색조달·Real Value·책임투자·공시", featureKey: "catalog" },
-  { id: "publications", group: "공개 화면", title: "Sustainability Publications (2분할 게시판)", hash: "#publications", status: "있음", desc: "PwC·4대 회계법인·법무법인·임팩트온·유튜브 브리핑", featureKey: "catalog" },
+  { id: "services", group: "공개 화면", title: "분야별 ESG 자문 (RE100·TCFD 등)", hash: "#services", status: "있음", desc: "RE100·ESG관리체계·TCFD·녹색조달·임팩트·택소노미·공시", featureKey: "catalog" },
+  { id: "publications", group: "공개 화면", title: "정부지원사업 · 공공 정책 아카이브", hash: "#publications", status: "있음", desc: "환경산업기술원·에너지경제연구원 등 최근 1년 공고·발간물 모아보기", featureKey: "catalog" },
   { id: "education", group: "공개 화면", title: "직무·직급별 교육 과정", hash: "#education", status: "있음", desc: "임원·실무자·협력사 맞춤 커리큘럼", featureKey: "lms" },
   { id: "process", group: "공개 화면", title: "도입 · 진행 절차", hash: "#process", status: "있음", desc: "사전 진단부터 사후 리포트까지 단계 안내", featureKey: "core" },
   { id: "fit", group: "공개 화면", title: "도입 추천 기업 유형", hash: "#fit", status: "있음", desc: "기업 규모·상황별 맞춤 도입 가이드", featureKey: "core" },

@@ -9,12 +9,6 @@ import { useLms } from "@/lib/lms-store";
 import { cn } from "@/lib/utils";
 import { LmsApplyTab } from "@/sections/lms-apply-tab";
 
-const SOURCE_LABELS = {
-  youtube: "YouTube 일부공개",
-  vimeo: "Vimeo 보안스트리밍",
-  mp4: "MP4 직접업로드",
-} as const;
-
 export function LmsPortal({
   initialTab = "classroom",
   onGoAdmin,
@@ -51,31 +45,30 @@ export function LmsPortal({
   const openSingleCert = () => {
     if (!activeUser || !currentCourse) return;
     const cid = currentCourse.courseId;
-    setCertPreview([{
-      certNo: activeUser.certNumbers[cid] ?? "CEA-2026-1011",
-      userName: activeUser.name,
-      userEmail: activeUser.email,
-      corpName: activeUser.corpName,
-      department: activeUser.department,
-      courseTitle: currentCourse.title,
-      durationMin: currentCourse.durationMin,
-      progress: currentProgress,
-      completedAt: activeUser.completedAt[cid] ?? new Date().toISOString().slice(0, 10),
-    }]);
+    setCertPreview([
+      {
+        certNo: activeUser.certNumbers[cid] ?? "CEA-2026-1011",
+        userName: activeUser.name,
+        userEmail: activeUser.email,
+        corpName: activeUser.corpName,
+        department: activeUser.department,
+        courseTitle: currentCourse.title,
+        durationMin: currentCourse.durationMin,
+        progress: currentProgress,
+        completedAt: activeUser.completedAt[cid] ?? new Date().toISOString().slice(0, 10),
+      },
+    ]);
   };
 
   return (
-    <section id="lms" className="border-t py-12 md:py-16">
-      <div className="container">
+    <section id="lms" className="py-12 md:py-16">
+      <div className="container break-keep">
         <div className="mb-8 flex flex-col justify-between gap-4 border-b pb-6 md:flex-row md:items-end">
           <div>
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <Badge className="bg-primary/15 text-primary hover:bg-primary/20">CEA B2B LMS · Supabase 연동</Badge>
-              <span className="text-xs text-muted-foreground">www.cea.co.kr 온라인 교육 시스템</span>
-            </div>
+            <p className="mb-2 text-xs font-bold text-primary">기업 온라인 교육 시스템</p>
             <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">기업 전용 수강 신청 &amp; 온라인 강의실</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              기업 전용 링크로 아이디를 등록하면 계약된 강의가 즉시 열리고, 학습률 달성 시 수료증이 자동 발급됩니다.
+            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+              전용 링크로 업무용 이메일을 등록하면 계약된 과정이 즉시 열리고, 수료 기준 달성 시 수료증이 발급됩니다.
             </p>
           </div>
           <Button
@@ -84,49 +77,51 @@ export function LmsPortal({
             onClick={() => (isAdminLoggedIn ? onGoAdmin() : setLoginModalOpen(true))}
             className="min-h-11 w-full whitespace-normal font-semibold sm:w-auto sm:whitespace-nowrap"
           >
-            {isAdminLoggedIn ? "관리자 콘솔(14대 메뉴 · 수료증 일괄출력) →" : "관리자 로그인 (수료증 일괄출력) →"}
+            {isAdminLoggedIn ? "관리자 콘솔 바로가기 →" : "관리자 로그인 →"}
           </Button>
         </div>
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as "classroom" | "apply")} className="space-y-6">
           <TabsList className="grid h-auto! w-full grid-cols-1 gap-1 p-1 sm:inline-flex sm:h-11! sm:w-fit">
             <TabsTrigger value="classroom" className="min-h-11 w-full gap-2 px-3 whitespace-normal text-xs font-bold sm:w-auto sm:px-4 sm:whitespace-nowrap sm:text-sm">
-              <PlayCircle className="size-4 shrink-0" /> 나의 온라인 강의실 (진도율 · 수료증)
+              <PlayCircle className="size-4 shrink-0" /> 나의 온라인 강의실
             </TabsTrigger>
             <TabsTrigger value="apply" className="min-h-11 w-full gap-2 px-3 whitespace-normal text-xs font-bold sm:w-auto sm:px-4 sm:whitespace-nowrap sm:text-sm">
-              <Link2 className="size-4 shrink-0" /> 기업 전용 아이디 등록 폼 (강의 자동 오픈)
+              <Link2 className="size-4 shrink-0" /> 기업 전용 아이디 등록
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="classroom" className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4">
               <div className="flex w-full max-w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:gap-3">
-                <span className="text-xs font-bold text-muted-foreground">현재 접속 수강생(예시 계정 전환):</span>
+                <span className="text-xs font-bold text-muted-foreground">수강 계정:</span>
                 <select
-                  aria-label="접속 수강생 전환"
+                  aria-label="수강 계정 선택"
                   value={activeUser?.id ?? ""}
                   onChange={(e) => setActiveUserId(e.target.value)}
-                  className="h-11 min-h-11 w-full max-w-full min-w-0 rounded-md border bg-background px-3 text-sm font-semibold sm:w-auto"
+                  className="h-11 min-h-11 w-full max-w-full min-w-0 rounded-md border bg-background px-3 text-sm font-semibold sm:max-w-[340px]"
                 >
                   {users.map((u) => (
                     <option key={u.id} value={u.id}>
-                      [{u.corpName}] {u.name} ({u.email}) — 열린 강의 {u.enrolledCourseIds.length}개
+                      {u.name} ({u.corpName}) · {u.enrolledCourseIds.length}개 과정
                     </option>
                   ))}
                 </select>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <UserCheck className="size-4 shrink-0 text-primary" />
-                <span>소속: <strong className="text-foreground">{activeUser?.corpName}</strong> ({activeUser?.department})</span>
+                <span>
+                  소속: <strong className="text-foreground">{activeUser?.corpName}</strong> ({activeUser?.department})
+                </span>
               </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)]">
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
-                  <h2 className="text-sm font-bold">내 아이디에 오픈된 과정 ({enrolledCourses.length}개)</h2>
+                  <h2 className="text-sm font-bold">수강 중인 과정 ({enrolledCourses.length}개)</h2>
                   <button type="button" onClick={() => setTab("apply")} className="min-h-11 px-1 text-xs font-semibold text-primary underline underline-offset-4">
-                    + 기업 링크로 추가 오픈
+                    + 기업 링크로 과정 추가
                   </button>
                 </div>
                 {enrolledCourses.map((m) => {
@@ -144,9 +139,12 @@ export function LmsPortal({
                       )}
                     >
                       <div className="mb-1.5 flex items-center justify-between gap-2">
-                        <Badge variant="outline" className="text-[11px]">{m.level} · {m.videoSourceType.toUpperCase()}</Badge>
+                        {/* 유튜브·MP4 등 영상 포맷 노출 제거, 난이도·수강시간만 표시 (#8) */}
+                        <Badge variant="outline" className="text-[11px]">
+                          {m.level} · {m.durationMin}분
+                        </Badge>
                         <span className={cn("text-xs font-bold", done ? "text-primary" : "text-muted-foreground")}>
-                          {done ? "✓ 수료 완료" : `진도율 ${pct}%`}
+                          {done ? `✓ 수료 완료 (${pct}%)` : `진도율 ${pct}%`}
                         </span>
                       </div>
                       <p className="text-sm font-bold">{m.title}</p>
@@ -163,9 +161,9 @@ export function LmsPortal({
                   <CardHeader className="border-b bg-muted/20 px-5 py-4 sm:px-6">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex flex-wrap items-center gap-2">
-                        <Badge className="bg-primary/15 text-primary">소스: {SOURCE_LABELS[currentCourse.videoSourceType]}</Badge>
+                        <Badge className="bg-primary/15 text-primary">{currentCourse.level} 과정</Badge>
                         <span className="text-xs text-muted-foreground">
-                          수료 기준: 학습률 {currentCourse.passRate}% 이상 (총 {currentCourse.durationMin}분)
+                          수료 기준: 진도율 {currentCourse.passRate}% 이상 · 총 {currentCourse.durationMin}분
                         </span>
                       </div>
                       {isCompleted && (
@@ -208,11 +206,11 @@ export function LmsPortal({
                     <div className="rounded-xl border bg-muted/30 p-4">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                          <p className="text-xs font-semibold text-muted-foreground">실시간 학습률(진도율) 자동 기록 · Supabase DB 동기화</p>
+                          <p className="text-xs font-semibold text-muted-foreground">나의 수강 진도율</p>
                           <p className="mt-0.5 text-lg font-extrabold">
-                            현재 학습률 <span className="text-primary">{currentProgress}%</span>{" "}
+                            {isCompleted ? `수료 완료 (${currentProgress}%)` : `현재 진도율 ${currentProgress}%`}{" "}
                             <span className="text-xs font-normal text-muted-foreground">
-                              ({isCompleted ? `수료 완료 · 증서번호 ${activeUser?.certNumbers[currentCourse.courseId] ?? "발급됨"}` : `${currentCourse.passRate}% 이상 시 수료증 자동 발급`})
+                              ({isCompleted ? `증서번호 ${activeUser?.certNumbers[currentCourse.courseId] ?? "발급됨"}` : `${currentCourse.passRate}% 이상 수강 시 수료증 발급`})
                             </span>
                           </p>
                         </div>
@@ -223,10 +221,10 @@ export function LmsPortal({
                             className="min-h-11 px-3"
                             onClick={() => activeUser && updateProgress(activeUser.id, currentCourse.courseId, Math.min(100, currentProgress + 20))}
                           >
-                            +20% 시청 진행 (테스트)
+                            +20% 진도 반영
                           </Button>
                           <Button size="sm" className="min-h-11 px-3.5 font-semibold" onClick={() => activeUser && updateProgress(activeUser.id, currentCourse.courseId, 100)}>
-                            100% 수강 완료 처리
+                            100% 수료 완료
                           </Button>
                         </div>
                       </div>
@@ -239,13 +237,13 @@ export function LmsPortal({
                       <div className="flex items-start gap-3">
                         <FileSpreadsheet className="mt-0.5 size-5 shrink-0 text-primary" />
                         <div>
-                          <p className="text-sm font-bold">강의 교안(PDF) · 실습 템플릿 (Google Drive 연동)</p>
-                          <p className="text-xs text-muted-foreground">구독 중인 구글 드라이브 폴더에서 교안과 엑셀 실습 시트를 내려받습니다.</p>
+                          <p className="text-sm font-bold">강의 교안(PDF) · 실무 엑셀 템플릿</p>
+                          <p className="text-xs text-muted-foreground">강의 수강에 필요한 교안과 실습 양식을 내려받습니다.</p>
                         </div>
                       </div>
                       <Button asChild variant="outline" size="sm" className="min-h-11 shrink-0 gap-1.5 px-3.5">
                         <a href={currentCourse.driveMaterialUrl} target="_blank" rel="noreferrer">
-                          구글 드라이브 교안 열기 <ExternalLink className="size-3.5" />
+                          강의 자료 열기 <ExternalLink className="size-3.5" />
                         </a>
                       </Button>
                     </div>
@@ -261,7 +259,7 @@ export function LmsPortal({
         </Tabs>
       </div>
 
-      <CertificateBatchModal open={certPreview.length > 0} onClose={() => setCertPreview([])} items={certPreview} title="개인 수료증 출력 미리보기" />
+      <CertificateBatchModal open={certPreview.length > 0} onClose={() => setCertPreview([])} items={certPreview} title="수료증 출력 미리보기" />
     </section>
   );
 }

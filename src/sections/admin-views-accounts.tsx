@@ -74,7 +74,7 @@ export function AdminViewsAccounts({
               <Textarea
                 value={bulkEmails}
                 onChange={(e) => setBulkEmails(e.target.value)}
-                placeholder="by.yoo@cea.co.kr, mj.kim@cea.co.kr"
+                placeholder="manager@cea.co.kr, esg@company.co.kr"
                 className="mt-1.5 min-h-[92px]"
               />
             </div>

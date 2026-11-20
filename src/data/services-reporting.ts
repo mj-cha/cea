@@ -4,8 +4,8 @@ export const reportingServices: Service[] = [
   {
     id: "disclosure",
     no: "07",
-    title: "ESG 공시 · 보고서 검증 및 평가 대응",
-    en: "ESG Reporting, Assurance & Rating Advisory",
+    title: "지속가능경영보고서 · KSSB 공시 및 평가 자문",
+    en: "Sustainability Reporting, KSSB Disclosure & Assurance",
     stakeholder: "평가기관 · 자본시장 · 이해관계자",
     summary:
       "GRI·ISSB·ESRS 기준 이중 중대성 평가와 지속가능경영보고서 기획·발간, AA1000AS 제3자 검증, 그리고 KCGS·MSCI·DJSI·EcoVadis 등 국내외 핵심 ESG 평가 등급 상향 전략을 원스톱으로 제공합니다.",
