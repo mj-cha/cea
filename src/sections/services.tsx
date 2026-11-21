@@ -36,15 +36,15 @@ function Panel({ s }: { s: Service }) {
         </div>
       </header>
 
-      <div className="space-y-10 px-6 py-8 md:px-10 md:py-10">
+      <div className="space-y-11 px-5 py-7 sm:px-6 sm:py-8 md:px-10 md:py-10">
         <section>
           <SubHead>필요한 이유</SubHead>
-          <p className="mb-5 text-[15px] leading-relaxed text-muted-foreground">{s.why}</p>
-          <ol className="grid gap-3 md:grid-cols-3">
+          <p className="mb-6 text-[15.5px] leading-[1.8] text-muted-foreground">{s.why}</p>
+          <ol className="grid gap-4 md:grid-cols-3">
             {s.purposes.map((p) => (
-              <li key={p.title} className="rounded-xl border bg-background/40 p-4">
-                <p className="leading-snug font-bold">{p.title}</p>
-                {p.desc && <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{p.desc}</p>}
+              <li key={p.title} className="rounded-xl border bg-background/40 p-5">
+                <p className="text-[15px] leading-snug font-bold">{p.title}</p>
+                {p.desc && <p className="mt-2.5 text-[14px] leading-[1.75] text-muted-foreground">{p.desc}</p>}
               </li>
             ))}
           </ol>
@@ -52,17 +52,17 @@ function Panel({ s }: { s: Service }) {
 
         <section>
           <SubHead>주요 서비스</SubHead>
-          <ul className="grid gap-2.5 sm:grid-cols-2">
+          <ul className="grid gap-3.5 sm:grid-cols-2">
             {s.areas.map((a) => (
-              <li key={a.name} className="rounded-xl bg-muted/70 px-4 py-3.5">
-                <p className="flex items-center gap-2.5 font-semibold">
-                  <Check className="size-4 shrink-0 text-primary" />
-                  {a.name}
+              <li key={a.name} className="rounded-xl bg-muted/70 px-5 py-4">
+                <p className="flex items-start gap-2.5 text-[15px] leading-snug font-semibold">
+                  <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <span>{a.name}</span>
                 </p>
                 {a.items?.length ? (
-                  <ul className="mt-2 space-y-1 pl-[26px]">
+                  <ul className="mt-2.5 space-y-1.5 pl-[26px]">
                     {a.items.map((it) => (
-                      <li key={it} className="text-[13px] leading-relaxed text-muted-foreground">
+                      <li key={it} className="text-[14px] leading-[1.72] text-muted-foreground">
                         {it}
                       </li>
                     ))}
@@ -77,17 +77,17 @@ function Panel({ s }: { s: Service }) {
           <SubHead>수행 절차</SubHead>
           <ol
             className="grid gap-px overflow-hidden rounded-xl border bg-border"
-            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 180px), 1fr))" }}
+            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 190px), 1fr))" }}
           >
             {s.process.map((p, i) => (
-              <li key={p.phase} className="bg-card p-4">
-                <p className="tabular font-mono text-[11px] text-primary">{i + 1}단계</p>
-                <p className="mt-1 font-bold">{p.phase}</p>
-                <ul className="mt-3 space-y-1.5">
+              <li key={p.phase} className="bg-card p-5">
+                <p className="tabular font-mono text-[11.5px] font-semibold text-primary">{i + 1}단계</p>
+                <p className="mt-1.5 text-[15px] font-bold">{p.phase}</p>
+                <ul className="mt-3 space-y-2">
                   {p.items.map((it) => (
-                    <li key={it} className="flex gap-2 text-[13px] leading-snug text-muted-foreground">
-                      <span className="mt-[7px] size-1 shrink-0 rounded-full bg-primary/70" />
-                      {it}
+                    <li key={it} className="flex gap-2 text-[13.5px] leading-[1.7] text-muted-foreground">
+                      <span className="mt-[9px] size-1.5 shrink-0 rounded-full bg-primary/70" />
+                      <span>{it}</span>
                     </li>
                   ))}
                 </ul>
@@ -98,11 +98,11 @@ function Panel({ s }: { s: Service }) {
 
         <section>
           <SubHead>CEA가 다른 점</SubHead>
-          <div className="grid gap-3 md:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-3">
             {s.strengths.map((st) => (
               <div key={st.title} className="border-l-2 border-primary/60 pl-4">
-                <p className="leading-snug font-bold">{st.title}</p>
-                <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{st.desc}</p>
+                <p className="text-[15px] leading-snug font-bold">{st.title}</p>
+                <p className="mt-2 text-[14px] leading-[1.75] text-muted-foreground">{st.desc}</p>
               </div>
             ))}
           </div>
@@ -200,16 +200,16 @@ export function Services() {
           onValueChange={select}
           className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start"
         >
-          <TabsList className="grid h-auto! w-full grid-cols-2 gap-1.5 rounded-2xl border bg-card p-2 sm:grid-cols-3 lg:sticky lg:top-24 lg:flex lg:flex-col">
+          <TabsList className="grid h-auto! w-full grid-cols-1 gap-1.5 rounded-2xl border bg-card p-2 sm:grid-cols-2 lg:sticky lg:top-24 lg:flex lg:flex-col">
             {services.map((s) => (
               <TabsTrigger
                 key={s.id}
                 value={s.id}
-                className="group h-auto w-full justify-start gap-2.5 rounded-xl border-0 px-3.5 py-3 text-left text-[14px] text-muted-foreground transition-colors duration-150 after:hidden hover:bg-accent data-active:bg-foreground! data-active:text-background! data-active:shadow-none lg:gap-4 lg:px-4 lg:py-3.5 lg:text-[15px]"
+                className="group min-h-11 h-auto w-full justify-start gap-2.5 rounded-xl border-0 px-3.5 py-3 text-left text-[14px] leading-snug whitespace-normal text-muted-foreground transition-colors duration-150 after:hidden hover:bg-accent data-active:bg-foreground! data-active:text-background! data-active:shadow-none lg:gap-3.5 lg:px-4 lg:py-3.5 lg:text-[15px]"
               >
-                <span className="tabular font-mono text-[11px] opacity-60 group-data-active:opacity-100 lg:text-[12px]">{s.no}</span>
-                <span className="truncate font-bold">{s.title}</span>
-                <ArrowRight className="ml-auto hidden size-4 opacity-0 transition-[opacity,transform] duration-150 group-hover:opacity-50 group-data-active:translate-x-0.5 group-data-active:opacity-100 lg:block" />
+                <span className="tabular shrink-0 font-mono text-[11px] opacity-60 group-data-active:opacity-100 lg:text-[12px]">{s.no}</span>
+                <span className="font-bold break-keep">{s.title}</span>
+                <ArrowRight className="ml-auto hidden size-4 shrink-0 opacity-0 transition-[opacity,transform] duration-150 group-hover:opacity-50 group-data-active:translate-x-0.5 group-data-active:opacity-100 lg:block" />
               </TabsTrigger>
             ))}
           </TabsList>

@@ -87,13 +87,26 @@ export function Faq() {
               {f.q}
             </AccordionTrigger>
             <AccordionContent className="pb-6">
-              <ul className="space-y-2.5 text-[14.5px] leading-[1.72] break-keep text-foreground/85">
-                {f.points.map((pt, idx) => (
-                  <li key={idx} className="flex gap-2.5">
-                    <span className="mt-[9px] size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
-                    <span>{pt}</span>
-                  </li>
-                ))}
+              <ul className="space-y-3.5 text-[15px] leading-[1.8] break-keep text-foreground/85">
+                {f.points.map((pt, idx) => {
+                  const colonIdx = pt.indexOf(":");
+                  const hasLead = colonIdx > 0 && colonIdx <= 14;
+                  return (
+                    <li key={idx} className="flex gap-2.5">
+                      <span className="mt-[10px] size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
+                      <span>
+                        {hasLead ? (
+                          <>
+                            <strong className="font-bold text-foreground">{pt.slice(0, colonIdx + 1)}</strong>
+                            {pt.slice(colonIdx + 1)}
+                          </>
+                        ) : (
+                          pt
+                        )}
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
             </AccordionContent>
           </AccordionItem>

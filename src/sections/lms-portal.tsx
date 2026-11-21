@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { Award, ExternalLink, FileSpreadsheet, Link2, PlayCircle, UserCheck } from "lucide-react";
+import { Link2, PlayCircle, UserCheck } from "lucide-react";
 import { CertificateBatchModal, type CertificatePrintItem } from "@/components/certificate-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLms } from "@/lib/lms-store";
 import { cn } from "@/lib/utils";
 import { LmsApplyTab } from "@/sections/lms-apply-tab";
+import { LmsCoursePlayer } from "@/sections/lms-course-player";
 
 export function LmsPortal({
   initialTab = "classroom",
@@ -19,7 +19,8 @@ export function LmsPortal({
   const { courseMedia, corps, users, activeUserId, setActiveUserId, isAdminLoggedIn, loggedInUser, updateProgress } = useLms();
   // 비로그인 방문자는 강의실을 볼 수 없고 전용 링크 등록 화면만 쓴다.
   const canSeeClassroom = Boolean(loggedInUser);
-  const [tab, setTab] = useState<"classroom" | "apply">(canSeeClassroom ? initialTab : "apply");
+  // 강의 등록·기업 추가 탭 전환은 관리자 전용(수강생은 본인 강의실만 이용)
+  const [tab, setTab] = useState<"classroom" | "apply">(canSeeClassroom ? (isAdminLoggedIn ? initialTab : "classroom") : "apply");
   const [selectedCorpCode, setSelectedCorpCode] = useState(corps[0]?.code ?? "cea");
 
   // 관리자만 다른 수강 계정을 볼 수 있다. 일반 수강생은 본인 계정 고정.
@@ -31,10 +32,10 @@ export function LmsPortal({
   const [certPreview, setCertPreview] = useState<CertificatePrintItem[]>([]);
 
   useEffect(() => {
-    setTab(canSeeClassroom ? initialTab : "apply");
+    setTab(canSeeClassroom ? (isAdminLoggedIn ? initialTab : "classroom") : "apply");
     const match = window.location.hash.match(/corp=([a-z0-9-]+)/i);
     if (match && corps.some((c) => c.code === match[1])) setSelectedCorpCode(match[1]);
-  }, [initialTab, corps, canSeeClassroom]);
+  }, [initialTab, corps, canSeeClassroom, isAdminLoggedIn]);
 
   useEffect(() => {
     if (activeUser && !activeUser.enrolledCourseIds.includes(selectedCourseId)) {
@@ -89,15 +90,15 @@ export function LmsPortal({
         </div>
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as "classroom" | "apply")} className="space-y-6">
-          {canSeeClassroom && (
-          <TabsList className="grid h-auto! w-full grid-cols-1 gap-1 p-1 sm:inline-flex sm:h-11! sm:w-fit">
-            <TabsTrigger value="classroom" className="min-h-11 w-full gap-2 px-3 whitespace-normal text-xs font-bold sm:w-auto sm:px-4 sm:whitespace-nowrap sm:text-sm">
-              <PlayCircle className="size-4 shrink-0" /> 나의 온라인 강의실
-            </TabsTrigger>
-            <TabsTrigger value="apply" className="min-h-11 w-full gap-2 px-3 whitespace-normal text-xs font-bold sm:w-auto sm:px-4 sm:whitespace-nowrap sm:text-sm">
-              <Link2 className="size-4 shrink-0" /> 기업 전용 아이디 등록
-            </TabsTrigger>
-          </TabsList>
+          {canSeeClassroom && isAdminLoggedIn && (
+            <TabsList className="grid h-auto! w-full grid-cols-1 gap-1 p-1 sm:inline-flex sm:h-11! sm:w-fit">
+              <TabsTrigger value="classroom" className="min-h-11 w-full gap-2 px-3 whitespace-normal text-xs font-bold sm:w-auto sm:px-4 sm:whitespace-nowrap sm:text-sm">
+                <PlayCircle className="size-4 shrink-0" /> 나의 온라인 강의실
+              </TabsTrigger>
+              <TabsTrigger value="apply" className="min-h-11 w-full gap-2 px-3 whitespace-normal text-xs font-bold sm:w-auto sm:px-4 sm:whitespace-nowrap sm:text-sm">
+                <Link2 className="size-4 shrink-0" /> 기업 전용 아이디 등록
+              </TabsTrigger>
+            </TabsList>
           )}
 
           <TabsContent value="classroom" className="space-y-6">
@@ -133,9 +134,11 @@ export function LmsPortal({
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
                   <h2 className="text-sm font-bold">수강 중인 과정 ({enrolledCourses.length}개)</h2>
-                  <button type="button" onClick={() => setTab("apply")} className="min-h-11 px-1 text-xs font-semibold text-primary underline underline-offset-4">
-                    + 기업 링크로 과정 추가
-                  </button>
+                  {isAdminLoggedIn && (
+                    <button type="button" onClick={() => setTab("apply")} className="min-h-11 px-1 text-xs font-semibold text-primary underline underline-offset-4">
+                      + 기업 링크로 과정 추가
+                    </button>
+                  )}
                 </div>
                 {enrolledCourses.map((m) => {
                   const pct = activeUser?.progress[m.courseId] ?? 0;
@@ -170,98 +173,15 @@ export function LmsPortal({
               </div>
 
               {currentCourse && (
-                <Card className="overflow-hidden py-0">
-                  <CardHeader className="border-b bg-muted/20 px-5 py-4 sm:px-6">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Badge className="bg-primary/15 text-primary">{currentCourse.level} 과정</Badge>
-                        <span className="text-xs text-muted-foreground">
-                          수료 기준: 진도율 {currentCourse.passRate}% 이상 · 총 {currentCourse.durationMin}분
-                        </span>
-                      </div>
-                      {isCompleted && (
-                        <Button size="sm" onClick={openSingleCert} className="min-h-11 gap-1.5 px-3.5 font-semibold">
-                          <Award className="size-4" /> 수료증 확인 · 인쇄
-                        </Button>
-                      )}
-                    </div>
-                    <CardTitle className="mt-2 text-xl font-extrabold">{currentCourse.title}</CardTitle>
-                  </CardHeader>
-
-                  <CardContent className="space-y-5 p-5 sm:p-6">
-                    <div className="aspect-video w-full overflow-hidden rounded-xl border bg-slate-950">
-                      {currentCourse.videoSourceType === "mp4" ? (
-                        <video
-                          key={currentCourse.videoUrl}
-                          src={currentCourse.videoUrl}
-                          controls
-                          className="h-full w-full"
-                          onTimeUpdate={(e) => {
-                            const v = e.currentTarget;
-                            if (v.duration > 0 && activeUser) {
-                              const watchedPct = Math.round((v.currentTime / v.duration) * 100);
-                              if (watchedPct > currentProgress) updateProgress(activeUser.id, currentCourse.courseId, watchedPct);
-                            }
-                          }}
-                        />
-                      ) : (
-                        <iframe
-                          key={currentCourse.videoUrl}
-                          src={currentCourse.videoUrl}
-                          title={currentCourse.title}
-                          className="h-full w-full"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
-                      )}
-                    </div>
-
-                    <div className="rounded-xl border bg-muted/30 p-4">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div>
-                          <p className="text-xs font-semibold text-muted-foreground">나의 수강 진도율</p>
-                          <p className="mt-0.5 text-lg font-extrabold">
-                            {isCompleted ? `수료 완료 (${currentProgress}%)` : `현재 진도율 ${currentProgress}%`}{" "}
-                            <span className="text-xs font-normal text-muted-foreground">
-                              ({isCompleted ? `증서번호 ${activeUser?.certNumbers[currentCourse.courseId] ?? "발급됨"}` : `${currentCourse.passRate}% 이상 수강 시 수료증 발급`})
-                            </span>
-                          </p>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="min-h-11 px-3"
-                            onClick={() => activeUser && updateProgress(activeUser.id, currentCourse.courseId, Math.min(100, currentProgress + 20))}
-                          >
-                            +20% 진도 반영
-                          </Button>
-                          <Button size="sm" className="min-h-11 px-3.5 font-semibold" onClick={() => activeUser && updateProgress(activeUser.id, currentCourse.courseId, 100)}>
-                            100% 수료 완료
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-muted">
-                        <div className="h-full bg-primary transition-all duration-300" style={{ width: `${currentProgress}%` }} />
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col justify-between gap-3 rounded-xl border bg-card p-4 sm:flex-row sm:items-center">
-                      <div className="flex items-start gap-3">
-                        <FileSpreadsheet className="mt-0.5 size-5 shrink-0 text-primary" />
-                        <div>
-                          <p className="text-sm font-bold">강의 교안(PDF) · 실무 엑셀 템플릿</p>
-                          <p className="text-xs text-muted-foreground">강의 수강에 필요한 교안과 실습 양식을 내려받습니다.</p>
-                        </div>
-                      </div>
-                      <Button asChild variant="outline" size="sm" className="min-h-11 shrink-0 gap-1.5 px-3.5">
-                        <a href={currentCourse.driveMaterialUrl} target="_blank" rel="noreferrer">
-                          강의 자료 열기 <ExternalLink className="size-3.5" />
-                        </a>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <LmsCoursePlayer
+                  course={currentCourse}
+                  activeUser={activeUser}
+                  currentProgress={currentProgress}
+                  isCompleted={isCompleted}
+                  isAdminLoggedIn={isAdminLoggedIn}
+                  onOpenCert={openSingleCert}
+                  onUpdateProgress={updateProgress}
+                />
               )}
             </div>
           </TabsContent>

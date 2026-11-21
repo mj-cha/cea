@@ -17,7 +17,7 @@ export function LmsApplyTab({
   onChangeCorpCode: (code: string) => void;
   onGoClassroom: () => void;
 }) {
-  const { courseMedia, corps, applyByCorpForm } = useLms();
+  const { courseMedia, corps, isAdminLoggedIn, applyByCorpForm } = useLms();
   const [applyEmail, setApplyEmail] = useState("");
   const [applyName, setApplyName] = useState("");
   const [applyDept, setApplyDept] = useState("");
@@ -64,24 +64,30 @@ export function LmsApplyTab({
 
         <div className="space-y-2 rounded-xl border bg-card p-4">
           <Label htmlFor="corp-select" className="text-xs font-bold text-muted-foreground">
-            계약 법인 선택
+            {isAdminLoggedIn ? "계약 법인 선택 (관리자 전용)" : "배정된 계약 법인"}
           </Label>
-          <select
-            id="corp-select"
-            value={selectedCorpCode}
-            onChange={(e) => {
-              onChangeCorpCode(e.target.value);
-              setApplyResult(null);
-            }}
-            className="h-10 w-full rounded-md border bg-background px-3 text-sm font-bold"
-          >
-            {corps.map((c) => (
-              <option key={c.id} value={c.code}>
-                {c.name} · {c.allowedCourseIds.length}개 과정 ({c.planName})
-              </option>
-            ))}
-          </select>
-          <div className="mt-2 rounded-lg bg-muted p-2.5 font-mono text-xs text-foreground">
+          {isAdminLoggedIn ? (
+            <select
+              id="corp-select"
+              value={selectedCorpCode}
+              onChange={(e) => {
+                onChangeCorpCode(e.target.value);
+                setApplyResult(null);
+              }}
+              className="h-11 w-full rounded-md border bg-background px-3 text-sm font-bold"
+            >
+              {corps.map((c) => (
+                <option key={c.id} value={c.code}>
+                  {c.name} · {c.allowedCourseIds.length}개 과정 ({c.planName})
+                </option>
+              ))}
+            </select>
+          ) : (
+            <p className="rounded-md border bg-muted/40 px-3 py-2.5 text-sm font-bold">
+              {selectedCorp?.name} · {selectedCorp?.allowedCourseIds.length}개 과정
+            </p>
+          )}
+          <div className="mt-2 rounded-lg bg-muted p-2.5 font-mono text-xs break-all text-foreground">
             https://www.cea.co.kr/#apply?corp={selectedCorp?.code}
           </div>
         </div>

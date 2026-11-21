@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ArrowRight, BookOpen, CheckCircle2, ExternalLink, Lock, Search, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,14 @@ export function Publications() {
   const [period, setPeriod] = useState<ArchivePeriod>("all");
   const [query, setQuery] = useState("");
   const [selectedNoticeId, setSelectedNoticeId] = useState<string>(publicNotices[0].id);
+  const detailRef = useRef<HTMLDivElement | null>(null);
+
+  const handleSelectNotice = (id: string) => {
+    setSelectedNoticeId(id);
+    if (window.innerWidth < 1024) {
+      requestAnimationFrame(() => detailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    }
+  };
 
   const showAdminBoard = isAdminLoggedIn && boardView === "admin";
 
@@ -111,33 +119,33 @@ export function Publications() {
               <Tabs value={pubCat} onValueChange={(v) => setPubCat(v as PublicPubCategory)}>
                 <TabsList aria-label="공공 자료 분류 필터" className="flex h-auto! flex-wrap gap-1 p-1">
                   {PUBLIC_PUB_CATEGORIES.map((c) => (
-                    <TabsTrigger key={c} value={c} className="min-h-10 px-3.5 py-1.5 text-xs font-bold whitespace-nowrap sm:text-sm">
+                    <TabsTrigger key={c} value={c} className="min-h-11 px-3.5 py-2 text-xs font-bold whitespace-nowrap sm:text-sm">
                       {c}
                     </TabsTrigger>
                   ))}
                 </TabsList>
               </Tabs>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                 <select
                   aria-label="최근 1년 아카이브 시기 선택"
                   value={period}
                   onChange={(e) => setPeriod(e.target.value as ArchivePeriod)}
-                  className="h-10 rounded-lg border bg-background px-3 text-xs font-bold"
+                  className="h-11 w-full rounded-lg border bg-background px-3 text-xs font-bold sm:w-auto"
                 >
                   <option value="all">최근 1년 전체 (2025.12 ~ 2026.11)</option>
                   <option value="2026-h2">2026년 하반기 (07 ~ 11월)</option>
                   <option value="2026-h1">2026년 상반기 (01 ~ 06월)</option>
                   <option value="2025">2025년 연말 아카이브</option>
                 </select>
-                <div className="relative min-w-[210px] flex-1 sm:w-64">
+                <div className="relative w-full min-w-0 flex-1 sm:min-w-[210px] sm:w-64">
                   <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="기관명·지원사업·키워드 검색"
                     aria-label="지원사업 및 정책 자료 검색"
-                    className="h-10 pl-9 text-xs"
+                    className="h-11 pl-9 text-xs"
                   />
                 </div>
               </div>
@@ -153,7 +161,7 @@ export function Publications() {
                 {filteredPublic.length === 0 ? (
                   <p className="p-8 text-center text-sm text-muted-foreground">검색 조건에 맞는 공고·자료가 없습니다.</p>
                 ) : (
-                  <ul className="max-h-[680px] divide-y overflow-y-auto" role="listbox" aria-label="공공 지원사업 및 발간물 목록">
+                  <ul className="max-h-[360px] divide-y overflow-y-auto lg:max-h-[680px]" role="listbox" aria-label="공공 지원사업 및 발간물 목록">
                     {filteredPublic.map((item) => {
                       const isSelected = item.id === activeNotice.id;
                       return (
@@ -162,9 +170,9 @@ export function Publications() {
                             type="button"
                             role="option"
                             aria-selected={isSelected}
-                            onClick={() => setSelectedNoticeId(item.id)}
+                            onClick={() => handleSelectNotice(item.id)}
                             className={cn(
-                              "flex w-full flex-col gap-1.5 px-4 py-4 text-left transition-colors",
+                              "flex min-h-11 w-full flex-col gap-1.5 px-4 py-4 text-left transition-colors",
                               isSelected ? "border-l-4 border-l-primary bg-primary/10" : "hover:bg-muted/50",
                             )}
                           >
@@ -175,7 +183,7 @@ export function Publications() {
                               <span className="text-xs font-bold text-primary">{item.agency}</span>
                               <span className="ml-auto font-mono text-[11px] text-muted-foreground">{item.date}</span>
                             </div>
-                            <p className={cn("text-[14px] leading-snug break-keep", isSelected ? "font-extrabold" : "font-semibold")}>
+                            <p className={cn("text-[14.5px] leading-[1.5] break-keep", isSelected ? "font-extrabold" : "font-semibold")}>
                               {item.title}
                             </p>
                             <p className="line-clamp-1 text-xs text-muted-foreground">{item.targetScale}</p>
@@ -187,8 +195,9 @@ export function Publications() {
                 )}
               </div>
 
+              <div ref={detailRef} className="scroll-mt-24">
               <Card className="overflow-hidden border-primary/30 py-0 shadow-md">
-                <CardHeader className="border-b bg-card px-6 py-5">
+                <CardHeader className="border-b bg-card px-5 py-5 sm:px-6">
                   <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-extrabold", STATUS_TONE[activeNotice.status])}>
@@ -199,40 +208,40 @@ export function Publications() {
                     </div>
                     <span className="font-mono text-xs text-muted-foreground">{activeNotice.date} · {activeNotice.periodText}</span>
                   </div>
-                  <CardTitle className="text-xl leading-snug font-extrabold break-keep md:text-2xl">
+                  <CardTitle className="text-xl leading-[1.4] font-extrabold break-keep md:text-2xl">
                     {activeNotice.title}
                   </CardTitle>
-                  <CardDescription className="mt-1.5 text-xs font-semibold text-foreground/80">
+                  <CardDescription className="mt-2 text-[13px] leading-relaxed font-semibold text-foreground/80">
                     대상 · 지원 규모: {activeNotice.targetScale}
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-5 p-6">
-                  <div className="rounded-xl border border-primary/30 bg-primary/8 p-4">
-                    <p className="mb-1 flex items-center gap-1.5 text-xs font-extrabold text-primary">
+                <CardContent className="space-y-6 p-5 sm:p-6">
+                  <div className="rounded-xl border border-primary/30 bg-primary/8 p-4 sm:p-5">
+                    <p className="mb-1.5 flex items-center gap-1.5 text-xs font-extrabold text-primary">
                       <Sparkles className="size-3.5" />
                       기업 활용 포인트 (왜 확인해야 하나요?)
                     </p>
-                    <p className="text-sm leading-relaxed font-semibold break-keep text-foreground">
+                    <p className="text-[14.5px] leading-[1.75] font-semibold break-keep text-foreground">
                       {activeNotice.fitReason}
                     </p>
                   </div>
 
-                  <div className="space-y-3 text-[15px] leading-relaxed break-keep text-foreground/90">
+                  <div className="space-y-4 text-[15px] leading-[1.8] break-keep text-foreground/90">
                     {activeNotice.summary.map((para, i) => (
                       <p key={i}>{para}</p>
                     ))}
                   </div>
 
-                  <div className="rounded-xl border bg-muted/40 p-4">
-                    <p className="mb-2.5 flex items-center gap-1.5 text-xs font-extrabold text-primary">
+                  <div className="rounded-xl border bg-muted/40 p-4 sm:p-5">
+                    <p className="mb-3 flex items-center gap-1.5 text-xs font-extrabold text-primary">
                       <BookOpen className="size-4" />
                       핵심 요건 · 실무 체크포인트
                     </p>
-                    <ul className="space-y-2">
+                    <ul className="space-y-2.5">
                       {activeNotice.keyPoints.map((kp) => (
-                        <li key={kp} className="flex items-start gap-2 text-xs leading-relaxed font-medium break-keep sm:text-sm">
-                          <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <li key={kp} className="flex items-start gap-2.5 text-[14px] leading-[1.72] font-medium break-keep">
+                          <CheckCircle2 className="mt-1 size-4 shrink-0 text-primary" />
                           <span>{kp}</span>
                         </li>
                       ))}
@@ -240,7 +249,7 @@ export function Publications() {
                   </div>
                 </CardContent>
 
-                <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/20 px-6 py-4">
+                <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t bg-muted/20 px-5 py-4 sm:px-6">
                   <div className="flex flex-wrap items-center gap-2">
                     {noticeService && (
                       <Button asChild variant="outline" size="sm" onClick={() => select(noticeService.id)} className="min-h-11 gap-1.5 px-3.5 font-bold">
@@ -269,6 +278,7 @@ export function Publications() {
                   </Button>
                 </CardFooter>
               </Card>
+              </div>
             </div>
           </>
         )}

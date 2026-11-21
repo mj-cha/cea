@@ -193,7 +193,7 @@ export function Contact() {
                     aria-pressed={picked.includes(v)}
                     onClick={() => toggle(v)}
                     className={cn(
-                      "rounded-full border px-3 py-1.5 text-[13px] font-semibold transition-[background-color,color,border-color,scale] duration-150 active:scale-[0.97]",
+                      "min-h-11 rounded-full border px-3.5 py-2 text-[13.5px] leading-snug font-semibold transition-[background-color,color,border-color,scale] duration-150 active:scale-[0.97]",
                       picked.includes(v)
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-input text-muted-foreground hover:border-foreground/40 hover:text-foreground",
@@ -230,7 +230,7 @@ export function Contact() {
                     ? `신청 내용이 복사되었습니다. ${CONTACT_EMAIL} 로 보내 주시면 확인 후 연락드릴게요.`
                     : `메일 앱(${CONTACT_EMAIL})에서 내용을 확인하고 보내 주세요. 메일 앱이 열리지 않으면 오른쪽 복사 버튼을 눌러 주세요.`}
               </span>
-              <Button type="button" variant="outline" size="sm" onClick={copySummary} className="h-8 gap-1.5 text-xs font-bold">
+              <Button type="button" variant="outline" size="sm" onClick={copySummary} className="min-h-11 gap-1.5 px-3.5 text-xs font-bold">
                 <Copy className="size-3.5" />
                 신청 내용 복사
               </Button>

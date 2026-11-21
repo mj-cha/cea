@@ -69,7 +69,7 @@ export function AdminConsole({ onGoLms }: { onGoLms: () => void }) {
               <button
                 type="button"
                 onClick={() => setMenu("host-plan")}
-                className="inline-flex items-center gap-1.5 rounded-full border bg-background px-3 py-1 text-xs font-semibold transition-colors hover:border-primary"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-full border bg-background px-3.5 py-1.5 text-xs font-semibold transition-colors hover:border-primary sm:min-h-8 sm:py-1"
               >
                 <Database className="size-3.5 text-primary" />
                 {SUPABASE_CONFIG.isConnected ? `DB 연결됨 (${syncStatus})` : "DB 연결 설정"}
@@ -80,18 +80,44 @@ export function AdminConsole({ onGoLms }: { onGoLms: () => void }) {
             </h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" onClick={onGoLms} className="font-semibold">
+            <Button variant="outline" size="sm" onClick={onGoLms} className="min-h-11 px-3.5 font-semibold sm:min-h-9">
               ← 온라인 강의실 보기
             </Button>
-            <Button variant="ghost" size="sm" onClick={resetDemoData} className="gap-1.5 text-xs text-muted-foreground">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                if (window.confirm("관리자 콘솔 데이터를 초기 상태로 되돌릴까요?")) resetDemoData();
+              }}
+              className="min-h-11 gap-1.5 px-3 text-xs text-muted-foreground sm:min-h-9"
+            >
               <RotateCcw className="size-3.5" />
               초기화
             </Button>
           </div>
         </div>
 
+        {/* 모바일(<lg)에서는 14개 메뉴를 드롭다운으로 압축해 본문 접근성 개선 */}
+        <div className="mb-5 rounded-2xl border bg-card p-4 lg:hidden">
+          <label htmlFor="admin-mobile-menu" className="mb-1.5 block text-xs font-bold text-muted-foreground">
+            관리 메뉴 이동 (14개)
+          </label>
+          <select
+            id="admin-mobile-menu"
+            value={menu}
+            onChange={(e) => setMenu(e.target.value as AdminMenuId)}
+            className="h-11 w-full rounded-lg border bg-background px-3 text-sm font-bold"
+          >
+            {ADMIN_MENUS.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.no}. {m.label} ({m.group})
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
-          <aside className="rounded-2xl border bg-card p-3">
+          <aside className="hidden rounded-2xl border bg-card p-3 lg:block">
             <p className="px-3 py-2 text-[11px] font-bold tracking-wider text-muted-foreground">관리 메뉴</p>
             <nav className="space-y-1" aria-label="관리자 콘솔 메뉴">
               {ADMIN_MENUS.map((m) => {

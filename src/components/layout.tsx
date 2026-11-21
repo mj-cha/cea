@@ -115,7 +115,7 @@ export function Header({
             variant="outline"
             size="icon"
             onClick={() => setThemeMode(themeMode === "white" ? "navy" : "white")}
-            className="size-10 shrink-0 sm:size-8"
+            className="size-11 min-h-11 min-w-11 shrink-0 sm:size-8 sm:min-h-8 sm:min-w-8"
             aria-label={themeMode === "white" ? "진한 남색 배경으로 전환" : "화이트 배경으로 전환"}
             title={themeMode === "white" ? "진한 남색 배경으로 전환" : "화이트 배경으로 전환"}
           >
@@ -263,14 +263,14 @@ export function QA({
 }) {
   return (
     <section id={id} className="container border-t py-16 first:border-t-0 md:py-24">
-      <div className="grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16">
+      <div className="grid gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16">
         <div>
           {eyebrow && <p className="mb-3 text-[13px] font-semibold text-primary">{eyebrow}</p>}
-          <h2 className="text-[28px] leading-[1.32] font-bold tracking-[-0.02em] break-keep md:sticky md:top-24 md:text-[34px]">{q}</h2>
+          <h2 className="text-[26px] leading-[1.35] font-bold tracking-[-0.02em] break-keep md:sticky md:top-24 md:text-[34px]">{q}</h2>
         </div>
         <div className="break-keep">
           <div className="mb-6 h-1 w-14 rounded-full bg-primary" />
-          {a && <p className="mb-8 text-lg leading-relaxed font-bold md:text-xl">{a}</p>}
+          {a && <p className="mb-7 text-[17px] leading-[1.7] font-bold md:text-xl">{a}</p>}
           {children}
         </div>
       </div>

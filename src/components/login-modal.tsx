@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Lock, LogIn, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,20 @@ export function LoginModal() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
+
+  useEffect(() => {
+    if (!loginModalOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLoginModalOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [loginModalOpen, setLoginModalOpen]);
 
   if (!loginModalOpen) return null;
 
@@ -27,33 +41,42 @@ export function LoginModal() {
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-xs"
+      className="fixed inset-0 z-[90] flex items-center justify-center overflow-y-auto bg-slate-950/70 p-4 backdrop-blur-xs"
       role="dialog"
       aria-modal="true"
       aria-label="CEA 계정 로그인"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) setLoginModalOpen(false);
+      }}
     >
-      <Card className="w-full max-w-md border-primary/30 py-0 shadow-2xl">
-        <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/30 px-6 py-4">
-          <div className="flex items-center gap-2.5">
+      <Card className="my-auto max-h-[90vh] w-full max-w-md overflow-y-auto border-primary/30 py-0 shadow-2xl">
+        <CardHeader className="flex flex-row items-center justify-between gap-2 border-b bg-muted/30 px-5 py-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-2.5">
             <img
               src={`${import.meta.env.BASE_URL}cea-logo.png`}
               alt="CEA 로고"
-              className="size-8 rounded-full bg-white p-0.5 object-contain shadow-xs"
+              className="size-8 shrink-0 rounded-full bg-white p-0.5 object-contain shadow-xs"
               width={32}
               height={32}
             />
-            <div>
+            <div className="min-w-0">
               <CardTitle className="text-base font-extrabold">주식회사 씨이에이(CEA) 로그인</CardTitle>
               <CardDescription className="text-xs">수강생 · 기업 담당자 · 관리자 공통</CardDescription>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => setLoginModalOpen(false)} aria-label="닫기">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-11 min-h-11 min-w-11 shrink-0 sm:size-9 sm:min-h-9 sm:min-w-9"
+            onClick={() => setLoginModalOpen(false)}
+            aria-label="닫기"
+          >
             <X className="size-4" />
           </Button>
         </CardHeader>
 
-        <CardContent className="space-y-4 p-6">
-          <form onSubmit={handleSubmit} className="space-y-3.5">
+        <CardContent className="space-y-4 p-5 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="login-email" className="text-xs font-bold">
                 아이디 (회사 이메일)
@@ -66,7 +89,7 @@ export function LoginModal() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@company.co.kr"
-                className="h-10"
+                className="h-11"
               />
             </div>
             <div className="space-y-1.5">
@@ -80,7 +103,7 @@ export function LoginModal() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-10"
+                className="h-11"
               />
             </div>
             {err && <p className="text-xs font-semibold text-destructive">{err}</p>}
@@ -89,8 +112,8 @@ export function LoginModal() {
               로그인
             </Button>
           </form>
-          <p className="text-center text-[12px] leading-relaxed text-muted-foreground">
-            기업 단체 수강 계정은 소속 회사 교육 담당자에게 받은 전용 링크로 먼저 등록해 주세요.
+          <p className="text-center text-[12.5px] leading-[1.7] break-keep text-muted-foreground">
+            기업 단체 수강 계정은 관리자가 배정한 회사 이메일로 로그인해 주세요.
           </p>
         </CardContent>
       </Card>

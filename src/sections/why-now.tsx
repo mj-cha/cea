@@ -36,25 +36,25 @@ export function WhyNow() {
       }
       a="우리 회사에 지금 가장 먼저 답을 요구하는 상대부터 짚으면 우선순위가 명확해집니다."
     >
-      <p className="mb-8 text-[15.5px] leading-[1.72] break-keep text-muted-foreground">
+      <p className="mb-8 text-[15.5px] leading-[1.8] break-keep text-muted-foreground">
         투자자는 기후·재무 영향 공시를, 글로벌 고객사는 공급망 탄소·인권 증빙을, 평가기관은 검증된 데이터 근거를 요구합니다.
         <br />한 번에 모든 과제를 벌이기보다 지금 기한이 정해진 핵심 과제 하나를 교육과 함께 해결하는 편이 가장 빠르고 정확합니다.
       </p>
 
       {/* 상단 ValueChain과 중복되던 7개 단순 리스트를 제거하고(#15), 기업 상황별 3대 출발 가이드로 구성 */}
-      <div className="grid gap-3.5">
+      <div className="grid gap-4">
         {entryCases.map((c) => (
           <a
             key={c.title}
             href="#services"
-            className="group rounded-xl border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent/40"
+            className="group rounded-xl border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent/40 sm:p-6"
           >
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-bold text-primary">{c.who}</span>
               <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
             </div>
-            <p className="mt-1.5 text-[16px] font-bold">{c.title}</p>
-            <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">{c.desc}</p>
+            <p className="mt-2 text-[16px] leading-snug font-bold">{c.title}</p>
+            <p className="mt-2 text-[14.5px] leading-[1.75] text-muted-foreground">{c.desc}</p>
           </a>
         ))}
       </div>
@@ -95,7 +95,7 @@ export function Process() {
                 {s.t}
                 <span className="rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-semibold text-muted-foreground">{s.tag}</span>
               </p>
-              <p className="mt-1.5 leading-relaxed text-muted-foreground">{s.d}</p>
+              <p className="mt-2 text-[15px] leading-[1.78] text-muted-foreground">{s.d}</p>
             </div>
           </li>
         ))}
@@ -128,11 +128,11 @@ export function Fit() {
             <p className="mb-4 flex items-center gap-2 text-sm font-bold">
               <Check className="size-4 text-primary" /> 이런 기업에 적합합니다
             </p>
-            <ul className="grid gap-3 sm:grid-cols-2">
+            <ul className="grid gap-4 sm:grid-cols-2">
               {fits.map((f) => (
-                <li key={f.t} className="rounded-xl border bg-card p-5">
-                  <p className="leading-snug font-bold">{f.t}</p>
-                  <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{f.d}</p>
+                <li key={f.t} className="rounded-xl border bg-card p-5 sm:p-6">
+                  <p className="text-[15.5px] leading-snug font-bold">{f.t}</p>
+                  <p className="mt-2.5 text-[14px] leading-[1.75] text-muted-foreground">{f.d}</p>
                 </li>
               ))}
             </ul>
@@ -141,11 +141,11 @@ export function Fit() {
             <p className="mb-4 flex items-center gap-2 text-sm font-bold text-muted-foreground">
               <X className="size-4" /> 이런 방식은 진행하지 않습니다
             </p>
-            <ul className="grid gap-3">
+            <ul className="grid gap-4">
               {notFits.map((f) => (
-                <li key={f.t} className="rounded-xl border border-dashed p-5">
-                  <p className="leading-snug font-bold text-foreground/80">{f.t}</p>
-                  <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{f.d}</p>
+                <li key={f.t} className="rounded-xl border border-dashed p-5 sm:p-6">
+                  <p className="text-[15.5px] leading-snug font-bold text-foreground/80">{f.t}</p>
+                  <p className="mt-2.5 text-[14px] leading-[1.75] text-muted-foreground">{f.d}</p>
                 </li>
               ))}
             </ul>

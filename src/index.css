@@ -144,3 +144,55 @@
   width: 100%;
   max-width: 1240px;
 }
+
+/* 수료증 인쇄 전용 규칙: 배경 헤더·푸터·모달 외곽을 숨기고 수료증만 A4 1페이지씩 출력 */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+  body.printing-cert {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  body.printing-cert header,
+  body.printing-cert main,
+  body.printing-cert footer {
+    display: none !important;
+  }
+  .cert-print-overlay {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    background: transparent !important;
+    padding: 0 !important;
+    backdrop-filter: none !important;
+  }
+  .cert-print-shell {
+    max-height: none !important;
+    max-width: none !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+  .cert-print-scroll {
+    overflow: visible !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+  .cert-print-sheet {
+    max-width: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    break-after: page;
+    page-break-after: always;
+  }
+  .cert-print-sheet:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+}

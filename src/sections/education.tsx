@@ -39,53 +39,53 @@ export function Education() {
         </div>
 
         <Tabs value={filter} onValueChange={setFilter} className="mb-8">
-          <TabsList aria-label="난이도별 과정 보기" className="h-10!">
+          <TabsList aria-label="난이도별 과정 보기" className="h-auto! flex-wrap gap-1 p-1">
             {["전체", ...levels].map((l) => (
-              <TabsTrigger key={l} value={l} className="px-3.5 text-sm font-semibold">
+              <TabsTrigger key={l} value={l} className="min-h-11 px-4 text-sm font-semibold">
                 {l}
               </TabsTrigger>
             ))}
           </TabsList>
         </Tabs>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((c) => (
             <Card
               key={c.id}
               className="group animate-fade-up gap-0 py-0 transition-[border-color,translate] duration-200 hover:-translate-y-0.5 hover:ring-primary/40"
             >
-              <CardHeader className="px-6 pt-6 pb-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className={cn("rounded-full px-2.5 py-0.5 text-[12px] font-bold", levelTone[c.level])}>{c.level}</span>
+              <CardHeader className="px-6 pt-6 pb-5">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className={cn("rounded-full px-3 py-1 text-[12px] font-bold", levelTone[c.level])}>{c.level}</span>
                   <a
                     href="#lms"
                     aria-label={`${c.title} 강의실 열기`}
-                    className="grid size-8 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground group-hover:bg-primary group-hover:text-primary-foreground"
+                    className="grid size-11 min-h-11 min-w-11 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground group-hover:bg-primary group-hover:text-primary-foreground"
                   >
-                    <Play className="size-3.5" />
+                    <Play className="size-4" />
                   </a>
                 </div>
-                <CardTitle className="text-[17px] leading-snug font-bold">{c.title}</CardTitle>
-                <CardDescription className="mt-1 text-[13px] leading-relaxed">{c.desc}</CardDescription>
+                <CardTitle className="text-[18px] leading-[1.4] font-bold">{c.title}</CardTitle>
+                <CardDescription className="mt-2 text-[14px] leading-[1.72]">{c.desc}</CardDescription>
               </CardHeader>
-              <CardContent className="flex-1 px-6 pb-4">
-                <ul className="space-y-1.5 border-t pt-4">
+              <CardContent className="flex-1 px-6 pb-5">
+                <ul className="space-y-2 border-t pt-4">
                   {c.outcomes.map((o) => (
-                    <li key={o} className="flex gap-2 text-[13px] leading-snug">
-                      <Check className="mt-0.5 size-3.5 shrink-0 text-primary" />
-                      {o}
+                    <li key={o} className="flex gap-2.5 text-[14px] leading-[1.68]">
+                      <Check className="mt-1 size-4 shrink-0 text-primary" />
+                      <span>{o}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
               <CardFooter className="flex-col items-start gap-2.5 border-t bg-muted/30 px-6 py-4">
-                <p className="text-[12px] font-medium text-foreground/85">{c.format}</p>
-                <p className="text-[12px] leading-relaxed text-muted-foreground">대상 · {c.audience}</p>
-                <div className="mt-1 flex w-full flex-wrap items-center justify-between gap-2 pt-1">
+                <p className="text-[13px] font-semibold text-foreground/85">{c.format}</p>
+                <p className="text-[13px] leading-[1.65] text-muted-foreground">대상 · {c.audience}</p>
+                <div className="mt-1.5 flex w-full flex-wrap items-center justify-between gap-2 pt-1">
                   <a
                     href="#services"
                     onClick={() => select(c.service)}
-                    className="inline-flex items-center gap-1 text-[12px] font-semibold text-foreground transition-colors hover:text-primary"
+                    className="inline-flex min-h-11 items-center gap-1 text-[13px] font-semibold text-foreground transition-colors hover:text-primary"
                   >
                     <Badge variant="outline" className="mr-1 px-1.5 py-0 text-[10px]">
                       연계
@@ -95,10 +95,10 @@ export function Education() {
                   <a
                     href="#contact"
                     onClick={() => requestConsult("온라인 교육")}
-                    className="inline-flex items-center gap-1 text-[12px] font-bold text-primary hover:underline"
+                    className="inline-flex min-h-11 items-center gap-1 text-[13px] font-bold text-primary hover:underline"
                   >
                     수강 문의
-                    <ArrowRight className="size-3" />
+                    <ArrowRight className="size-3.5" />
                   </a>
                 </div>
               </CardFooter>
