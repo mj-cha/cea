@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Footer, Header, type AppViewMode } from "@/components/layout";
-import { AdminLoginGate, LoginModal } from "@/components/login-modal";
+import { LoginGate, LoginModal } from "@/components/login-modal";
 import { LmsProvider, useLms } from "@/lib/lms-store";
 import { ServiceProvider } from "@/lib/service-context";
 import { useStudioChildBridge } from "@/lib/studio-bridge";
@@ -30,7 +30,7 @@ function parseHashMode(hash: string): AppViewMode {
 
 function AppShell() {
   useStudioChildBridge();
-  const { isAdminLoggedIn, setLoginModalOpen } = useLms();
+  const { isAdminLoggedIn, loggedInUser, setLoginModalOpen } = useLms();
   const [mode, setMode] = useState<AppViewMode>(() => parseHashMode(window.location.hash));
   const isEmbed = new URLSearchParams(window.location.search).get("studio_embed") === "1";
 
@@ -79,8 +79,13 @@ function AppShell() {
           isAdminLoggedIn ? (
             <AdminConsole onGoLms={() => goHash("#lms")} />
           ) : (
-            <AdminLoginGate />
+            <LoginGate title="관리자 전용 화면입니다" desc="관리자 계정으로 로그인하면 운영 콘솔이 열립니다." />
           )
+        ) : mode === "lms" && !loggedInUser ? (
+          <LoginGate
+            title="로그인이 필요합니다"
+            desc="나의 강의실은 수강 계정으로 로그인한 뒤 이용할 수 있습니다."
+          />
         ) : mode === "lms" || mode === "apply" ? (
           <LmsPortal
             initialTab={mode === "apply" ? "apply" : "classroom"}

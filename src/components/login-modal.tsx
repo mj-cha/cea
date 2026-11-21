@@ -1,16 +1,16 @@
 import { useState, type FormEvent } from "react";
-import { Lock, LogIn, ShieldCheck, UserCheck, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Lock, LogIn, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLms } from "@/lib/lms-store";
 
+/** 공개 로그인 창: 시연용 계정·미리 채운 비밀번호 없이 아이디/비밀번호만 받는다. */
 export function LoginModal() {
   const { loginModalOpen, setLoginModalOpen, loginWithEmail } = useLms();
-  const [email, setEmail] = useState("admin@cea.co.kr");
-  const [password, setPassword] = useState("cea2026!");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
 
   if (!loginModalOpen) return null;
@@ -18,8 +18,11 @@ export function LoginModal() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const res = loginWithEmail(email);
-    if (!res.ok) setErr(res.message);
-    else setErr("");
+    if (!res.ok) setErr("아이디 또는 비밀번호를 확인해 주세요.");
+    else {
+      setErr("");
+      setPassword("");
+    }
   };
 
   return (
@@ -41,7 +44,7 @@ export function LoginModal() {
             />
             <div>
               <CardTitle className="text-base font-extrabold">주식회사 씨이에이(CEA) 로그인</CardTitle>
-              <CardDescription className="text-xs">기업 수강생 · 관리자 인증</CardDescription>
+              <CardDescription className="text-xs">수강생 · 기업 담당자 · 관리자 공통</CardDescription>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={() => setLoginModalOpen(false)} aria-label="닫기">
@@ -49,19 +52,20 @@ export function LoginModal() {
           </Button>
         </CardHeader>
 
-        <CardContent className="space-y-5 p-6">
+        <CardContent className="space-y-4 p-6">
           <form onSubmit={handleSubmit} className="space-y-3.5">
             <div className="space-y-1.5">
               <Label htmlFor="login-email" className="text-xs font-bold">
-                아이디 (업무용 회사 이메일)
+                아이디 (회사 이메일)
               </Label>
               <Input
                 id="login-email"
                 type="email"
                 required
+                autoComplete="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="esg@company.co.kr"
+                placeholder="name@company.co.kr"
                 className="h-10"
               />
             </div>
@@ -73,6 +77,7 @@ export function LoginModal() {
                 id="login-pw"
                 type="password"
                 required
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-10"
@@ -84,49 +89,18 @@ export function LoginModal() {
               로그인
             </Button>
           </form>
-
-          <div className="space-y-2 border-t pt-4">
-            <p className="text-xs font-bold text-muted-foreground">시연용 빠른 계정 선택:</p>
-            <button
-              type="button"
-              onClick={() => loginWithEmail("admin@cea.co.kr")}
-              className="flex w-full items-center justify-between rounded-xl border border-primary/40 bg-primary/10 p-3 text-left text-xs transition-colors hover:bg-primary/15"
-            >
-              <div className="flex items-center gap-2.5">
-                <ShieldCheck className="size-4 shrink-0 text-primary" />
-                <div>
-                  <p className="font-extrabold text-foreground">관리자 (admin@cea.co.kr)</p>
-                  <p className="text-[11px] text-muted-foreground">관리자 콘솔 · 수료증 일괄 출력 권한</p>
-                </div>
-              </div>
-              <Badge className="shrink-0">관리자</Badge>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => loginWithEmail("manager@cea.co.kr")}
-              className="flex w-full items-center justify-between rounded-xl border bg-card p-3 text-left text-xs transition-colors hover:bg-muted/50"
-            >
-              <div className="flex items-center gap-2.5">
-                <UserCheck className="size-4 shrink-0 text-primary" />
-                <div>
-                  <p className="font-bold text-foreground">OOO 매니저 · 수강생 (manager@cea.co.kr)</p>
-                  <p className="text-[11px] text-muted-foreground">온라인 강의실 수강 · 수료증 확인</p>
-                </div>
-              </div>
-              <Badge variant="outline" className="shrink-0">
-                수강생
-              </Badge>
-            </button>
-          </div>
+          <p className="text-center text-[12px] leading-relaxed text-muted-foreground">
+            기업 단체 수강 계정은 소속 회사 교육 담당자에게 받은 전용 링크로 먼저 등록해 주세요.
+          </p>
         </CardContent>
       </Card>
     </div>
   );
 }
 
-export function AdminLoginGate() {
-  const { loginWithEmail, setLoginModalOpen } = useLms();
+/** 로그인이 필요한 화면(강의실 · 관리자)에서 공통으로 쓰는 안내 */
+export function LoginGate({ title, desc }: { title: string; desc: string }) {
+  const { setLoginModalOpen } = useLms();
   return (
     <section className="container py-20">
       <Card className="mx-auto max-w-lg border-primary/30 py-8 text-center shadow-lg">
@@ -134,18 +108,13 @@ export function AdminLoginGate() {
           <div className="mx-auto grid size-12 place-items-center rounded-full bg-primary/10 text-primary">
             <Lock className="size-6" />
           </div>
-          <CardTitle className="text-2xl font-extrabold">관리자 전용 화면입니다</CardTitle>
-          <CardDescription className="break-keep">
-            기업 수강 운영 관리 및 수료증 일괄 출력은 <strong>관리자 계정</strong>으로 로그인했을 때만 표시됩니다.
-          </CardDescription>
+          <CardTitle className="text-2xl font-extrabold">{title}</CardTitle>
+          <CardDescription className="break-keep">{desc}</CardDescription>
         </CardHeader>
-        <CardContent className="mt-4 flex flex-col items-center justify-center gap-3 px-6 sm:flex-row">
-          <Button onClick={() => loginWithEmail("admin@cea.co.kr")} className="h-11 gap-2 px-6 font-bold">
-            <ShieldCheck className="size-4" />
-            관리자 로그인
-          </Button>
-          <Button variant="outline" onClick={() => setLoginModalOpen(true)} className="h-11 font-semibold">
-            다른 계정으로 로그인
+        <CardContent className="mt-4 flex justify-center px-6">
+          <Button onClick={() => setLoginModalOpen(true)} className="h-11 gap-2 px-6 font-bold">
+            <LogIn className="size-4" />
+            로그인
           </Button>
         </CardContent>
       </Card>

@@ -16,20 +16,25 @@ export function LmsPortal({
   initialTab?: "classroom" | "apply";
   onGoAdmin: () => void;
 }) {
-  const { courseMedia, corps, users, activeUserId, setActiveUserId, isAdminLoggedIn, setLoginModalOpen, updateProgress } = useLms();
-  const [tab, setTab] = useState<"classroom" | "apply">(initialTab);
+  const { courseMedia, corps, users, activeUserId, setActiveUserId, isAdminLoggedIn, loggedInUser, updateProgress } = useLms();
+  // 비로그인 방문자는 강의실을 볼 수 없고 전용 링크 등록 화면만 쓴다.
+  const canSeeClassroom = Boolean(loggedInUser);
+  const [tab, setTab] = useState<"classroom" | "apply">(canSeeClassroom ? initialTab : "apply");
   const [selectedCorpCode, setSelectedCorpCode] = useState(corps[0]?.code ?? "cea");
 
-  const activeUser = users.find((u) => u.id === activeUserId) ?? users[0];
+  // 관리자만 다른 수강 계정을 볼 수 있다. 일반 수강생은 본인 계정 고정.
+  const activeUser = isAdminLoggedIn
+    ? (users.find((u) => u.id === activeUserId) ?? users[0])
+    : (loggedInUser ?? undefined);
   const enrolledCourses = courseMedia.filter((m) => activeUser?.enrolledCourseIds.includes(m.courseId));
   const [selectedCourseId, setSelectedCourseId] = useState(enrolledCourses[0]?.courseId ?? courseMedia[0]?.courseId ?? "esg-101");
   const [certPreview, setCertPreview] = useState<CertificatePrintItem[]>([]);
 
   useEffect(() => {
-    setTab(initialTab);
+    setTab(canSeeClassroom ? initialTab : "apply");
     const match = window.location.hash.match(/corp=([a-z0-9-]+)/i);
     if (match && corps.some((c) => c.code === match[1])) setSelectedCorpCode(match[1]);
-  }, [initialTab, corps]);
+  }, [initialTab, corps, canSeeClassroom]);
 
   useEffect(() => {
     if (activeUser && !activeUser.enrolledCourseIds.includes(selectedCourseId)) {
@@ -71,17 +76,20 @@ export function LmsPortal({
               전용 링크로 업무용 이메일을 등록하면 계약된 과정이 즉시 열리고, 수료 기준 달성 시 수료증이 발급됩니다.
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => (isAdminLoggedIn ? onGoAdmin() : setLoginModalOpen(true))}
-            className="min-h-11 w-full whitespace-normal font-semibold sm:w-auto sm:whitespace-nowrap"
-          >
-            {isAdminLoggedIn ? "관리자 콘솔 바로가기 →" : "관리자 로그인 →"}
-          </Button>
+          {isAdminLoggedIn && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onGoAdmin}
+              className="min-h-11 w-full whitespace-normal font-semibold sm:w-auto sm:whitespace-nowrap"
+            >
+              관리자 콘솔 바로가기 →
+            </Button>
+          )}
         </div>
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as "classroom" | "apply")} className="space-y-6">
+          {canSeeClassroom && (
           <TabsList className="grid h-auto! w-full grid-cols-1 gap-1 p-1 sm:inline-flex sm:h-11! sm:w-fit">
             <TabsTrigger value="classroom" className="min-h-11 w-full gap-2 px-3 whitespace-normal text-xs font-bold sm:w-auto sm:px-4 sm:whitespace-nowrap sm:text-sm">
               <PlayCircle className="size-4 shrink-0" /> 나의 온라인 강의실
@@ -90,11 +98,13 @@ export function LmsPortal({
               <Link2 className="size-4 shrink-0" /> 기업 전용 아이디 등록
             </TabsTrigger>
           </TabsList>
+          )}
 
           <TabsContent value="classroom" className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4">
               <div className="flex w-full max-w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:gap-3">
                 <span className="text-xs font-bold text-muted-foreground">수강 계정:</span>
+                {isAdminLoggedIn ? (
                 <select
                   aria-label="수강 계정 선택"
                   value={activeUser?.id ?? ""}
@@ -107,6 +117,9 @@ export function LmsPortal({
                     </option>
                   ))}
                 </select>
+                ) : (
+                  <span className="text-sm font-semibold">{activeUser?.name} ({activeUser?.email})</span>
+                )}
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <UserCheck className="size-4 shrink-0 text-primary" />

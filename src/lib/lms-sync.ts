@@ -8,8 +8,8 @@ import type {
 } from "@/lib/lms-types";
 import { getSupabaseConfig, pullLmsStateFromSupabase, pushLmsStateToSupabase } from "@/lib/supabase-client";
 
-export const STORAGE_KEY = "cea_lms_state_v2";
-export const AUTH_STORAGE_KEY = "cea_auth_user_v2";
+export const STORAGE_KEY = "cea_lms_state_v3";
+export const AUTH_STORAGE_KEY = "cea_auth_user_v3";
 export const THEME_STORAGE_KEY = "cea_theme_mode_v2";
 
 export type SyncStatus = "로컬전용" | "진행 중" | "성공" | "실패";
@@ -49,7 +49,7 @@ export function createAuditLog(
   return {
     id: `log-${Date.now()}`,
     adminId: "adm-1",
-    adminName: "차명진 대표 (총괄)",
+    adminName: "CEA 총괄관리자",
     actionType,
     target,
     detail,

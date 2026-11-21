@@ -212,9 +212,6 @@ export function Header({
             <a href="#lms" className="min-h-11 py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
               나의 온라인 강의실
             </a>
-            <a href="#apply" className="min-h-11 py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
-              기업 전용 아이디 등록
-            </a>
             {isAdminLoggedIn && (
               <a href="#admin" className="min-h-11 py-2.5 text-sm font-bold text-primary" onClick={() => setOpen(false)}>
                 관리자 콘솔

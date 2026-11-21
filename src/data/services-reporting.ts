@@ -4,15 +4,15 @@ export const reportingServices: Service[] = [
   {
     id: "disclosure",
     no: "07",
-    title: "지속가능경영보고서 · KSSB 공시 및 평가 자문",
-    en: "Sustainability Reporting, KSSB Disclosure & Assurance",
+    title: "ESG 공시 · 지속가능경영보고서 발간 및 AA1000 제3자 검증",
+    en: "ESG Disclosure, Sustainability Reporting & AA1000 Assurance",
     stakeholder: "평가기관 · 자본시장 · 이해관계자",
     summary:
-      "GRI·ISSB·ESRS 기준 이중 중대성 평가와 지속가능경영보고서 기획·발간, AA1000AS 제3자 검증, 그리고 KCGS·MSCI·DJSI·EcoVadis 등 국내외 핵심 ESG 평가 등급 상향 전략을 원스톱으로 제공합니다.",
-    why: "발간된 지속가능경영보고서와 공시 데이터는 곧바로 국내외 ESG 평가기관(KCGS, MSCI, DJSI, EcoVadis)의 채점 근거가 되므로, 보고서 기획 단계부터 검증과 평가 지표를 하나로 묶어 설계해야 실질적인 등급 상승이 가능합니다.",
+      "GRI·ISSB(KSSB)·ESRS 기준 이중 중대성 평가와 지속가능경영보고서 기획·발간, AA1000AS 제3자 독립 검증, 그리고 KCGS·MSCI·DJSI·EcoVadis 등 국내외 핵심 ESG 평가 등급 상향 전략을 원스톱으로 제공합니다.",
+    why: "발간된 지속가능경영보고서와 공시 데이터는 곧바로 국내외 ESG 평가기관(KCGS, MSCI, DJSI, EcoVadis)의 채점 근거가 되므로, 보고서 기획 단계부터 제3자 검증과 평가 지표를 하나로 묶어 설계해야 실질적인 등급 상승이 가능합니다.",
     purposes: [
       {
-        title: "글로벌 공시 표준(GRI · ISSB · ESRS) 기반 고품질 보고서 발간",
+        title: "글로벌 공시 표준(GRI · ISSB · KSSB · ESRS) 기반 보고서 발간",
         desc: "이중 중대성 평가로 핵심 이슈를 도출하고, 정합성 높은 데이터와 스토리텔링으로 국·영문 지속가능경영보고서를 발간합니다.",
       },
       {
@@ -31,7 +31,7 @@ export const reportingServices: Service[] = [
       },
       {
         name: "지속가능경영보고서 기획 · 원고 작성 · 디자인",
-        items: ["GRI Standards 2021, SASB, TCFD, UN SDGs 연계 목차 및 원고 작성", "그린워싱 방지 팩트체크, 인포그래픽 편집 디자인, 영문 번역·감수"],
+        items: ["GRI Standards 2021, ISSB/KSSB, SASB, TCFD 연계 목차 및 원고 작성", "그린워싱 방지 팩트체크, 인포그래픽 편집 디자인, 영문 번역·감수"],
       },
       {
         name: "AA1000AS v3 기준 제3자 독립 검증",
@@ -70,8 +70,8 @@ export const reportingServices: Service[] = [
       {
         name: "이중 중대성 평가 및 지속가능경영보고서 원스톱 발간",
         feature:
-          "글로벌 공시 표준(GRI, ISSB, ESRS)에 부합하는 이중 중대성 평가부터 현업 데이터 수집, 원고 집필, 편집 디자인, 외국어 번역, 웹 공시까지 전 과정을 일괄 수행합니다.",
-        targets: ["지속가능경영보고서를 최초 발간하거나 글로벌 공시 수준으로 고도화하려는 기업"],
+          "글로벌 공시 표준(GRI, ISSB/KSSB, ESRS)에 부합하는 이중 중대성 평가부터 현업 데이터 수집, 원고 집필, 편집 디자인, 외국어 번역, 웹 공시까지 전 과정을 일괄 수행합니다.",
+        targets: ["지속가능경영보고서를 최초 발간하거나 의무 공시 수준으로 고도화하려는 기업"],
         effects: ["현업 부서의 작성 부담 최소화 및 발간 일정 100% 준수", "이해관계자와 평가기관이 신뢰하는 표준 공시 인프라 확보"],
       },
       {
