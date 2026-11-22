@@ -60,8 +60,20 @@ function AppShell() {
     window.location.hash = h;
   };
 
+  const isLocalDev = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
   if (mode === "studio" && !isEmbed) {
-    return <StudioShell onExit={() => goHash("#top")} />;
+    return isAdminLoggedIn || isLocalDev ? (
+      <StudioShell onExit={() => goHash("#top")} />
+    ) : (
+      <div className="flex min-h-screen flex-col">
+        <Header currentMode={mode} onNavigate={goHash} />
+        <main id="main-content" className="flex-1">
+          <LoginGate title="관리자 전용 스튜디오입니다" desc="관리자 계정으로 로그인하면 좌측 메뉴·DOM별 수정 메모 스튜디오가 열립니다." />
+        </main>
+        <Footer onNavigate={goHash} />
+        <LoginModal />
+      </div>
+    );
   }
 
   return (

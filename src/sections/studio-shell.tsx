@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Copy, Monitor, Smartphone } from "lucide-react";
+import { ArrowLeft, ChevronDown, Copy, Monitor, Smartphone } from "lucide-react";
 import { CEA_SCREENS, CEA_STUDIO_THEMES, type ScreenItem } from "@/data/screens-config";
 import type { PickedBlockInfo } from "@/lib/studio-bridge";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,12 @@ export function StudioShell({ onExit }: { onExit: () => void }) {
   const [themeId, setThemeId] = useState<string>(CEA_STUDIO_THEMES[0].id);
   const [notes, setNotes] = useState<StudioNote[]>(loadNotes);
   const [toastMsg, setToastMsg] = useState("");
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(GROUPS.map((g) => [g, true])),
+  );
+
+  const toggleGroup = (grp: string) =>
+    setOpenGroups((prev) => ({ ...prev, [grp]: !prev[grp] }));
 
   const currentScreen = useMemo(
     () => CEA_SCREENS.find((s) => s.id === selectedId) ?? CEA_SCREENS[0],
@@ -229,30 +235,45 @@ export function StudioShell({ onExit }: { onExit: () => void }) {
             {GROUPS.map((grp) => {
               const items = filteredScreens.filter((s) => s.group === grp);
               if (!items.length) return null;
+              const isOpen = filterQ.trim() ? true : (openGroups[grp] ?? true);
               return (
-                <div key={grp} className="mb-3">
-                  <div className="px-2 py-1 text-[11px] font-bold text-slate-500">{grp}</div>
-                  <ul className="space-y-0.5">
-                    {items.map((item) => {
-                      const on = item.id === currentScreen.id;
-                      return (
-                        <li key={item.id}>
-                          <button
-                            type="button"
-                            data-studio-screen={item.id}
-                            onClick={() => selectScreen(item)}
-                            className={cn(
-                              "flex w-full items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-left text-xs transition-colors",
-                              on ? "bg-slate-800 font-bold text-white" : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200",
-                            )}
-                          >
-                            <span className="truncate">{item.title}</span>
-                            <span className="shrink-0 text-[10px] text-slate-500">{item.status}</span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                <div key={grp} className="mb-2 rounded-lg border border-slate-800/70 bg-slate-900/30">
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => toggleGroup(grp)}
+                    className="flex w-full items-center justify-between px-2.5 py-2 text-left text-[11px] font-bold text-slate-300 transition-colors hover:text-white"
+                  >
+                    <span>
+                      {grp} <span className="text-slate-500">({items.length})</span>
+                    </span>
+                    <ChevronDown
+                      className={cn("size-3.5 text-slate-400 transition-transform duration-150", !isOpen && "-rotate-90")}
+                    />
+                  </button>
+                  {isOpen && (
+                    <ul className="space-y-0.5 px-1.5 pb-1.5">
+                      {items.map((item) => {
+                        const on = item.id === currentScreen.id;
+                        return (
+                          <li key={item.id}>
+                            <button
+                              type="button"
+                              data-studio-screen={item.id}
+                              onClick={() => selectScreen(item)}
+                              className={cn(
+                                "flex w-full items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-left text-xs transition-colors",
+                                on ? "bg-slate-800 font-bold text-white" : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200",
+                              )}
+                            >
+                              <span className="truncate">{item.title}</span>
+                              <span className="shrink-0 text-[10px] text-slate-500">{item.status}</span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
                 </div>
               );
             })}

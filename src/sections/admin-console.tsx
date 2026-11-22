@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Database, RotateCcw, Shield } from "lucide-react";
+import { Database, LayoutGrid, RotateCcw, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SUPABASE_CONFIG, useLms } from "@/lib/lms-store";
@@ -80,6 +80,12 @@ export function AdminConsole({ onGoLms }: { onGoLms: () => void }) {
             </h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <Button asChild size="sm" className="min-h-11 gap-1.5 px-3.5 font-bold sm:min-h-9">
+              <a href="#__studio">
+                <LayoutGrid className="size-3.5" />
+                화면 검수 스튜디오 (DOM 메모)
+              </a>
+            </Button>
             <Button variant="outline" size="sm" onClick={onGoLms} className="min-h-11 px-3.5 font-semibold sm:min-h-9">
               ← 온라인 강의실 보기
             </Button>
