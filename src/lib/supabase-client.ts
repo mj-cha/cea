@@ -37,8 +37,12 @@ export interface SupabaseConnectionInfo {
   isConnected: boolean;
 }
 
+function normalizeSupabaseUrl(raw: string): string {
+  return raw.trim().replace(/\/rest\/v1\/?$/i, "").replace(/\/+$/, "");
+}
+
 export function getSupabaseConfig(): SupabaseConnectionInfo {
-  const envUrl = ((import.meta.env.VITE_SUPABASE_URL as string | undefined) || "").trim().replace(/\/+$/, "");
+  const envUrl = normalizeSupabaseUrl((import.meta.env.VITE_SUPABASE_URL as string | undefined) || "");
   const envKey = ((import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined) || "").trim();
 
   if (envUrl && envKey) {
@@ -49,7 +53,7 @@ export function getSupabaseConfig(): SupabaseConnectionInfo {
     const raw = localStorage.getItem(RUNTIME_CONFIG_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as { url?: string; anonKey?: string };
-      const rUrl = (parsed.url || "").trim().replace(/\/+$/, "");
+      const rUrl = normalizeSupabaseUrl(parsed.url || "");
       const rKey = (parsed.anonKey || "").trim();
       if (rUrl && rKey) {
         return { url: rUrl, anonKey: rKey, source: "runtime", isConnected: true };
@@ -63,7 +67,7 @@ export function getSupabaseConfig(): SupabaseConnectionInfo {
 }
 
 export function saveSupabaseRuntimeConfig(url: string, anonKey: string) {
-  const cleanUrl = url.trim().replace(/\/+$/, "");
+  const cleanUrl = normalizeSupabaseUrl(url);
   const cleanKey = anonKey.trim();
   if (!cleanUrl || !cleanKey) {
     localStorage.removeItem(RUNTIME_CONFIG_KEY);
@@ -73,12 +77,16 @@ export function saveSupabaseRuntimeConfig(url: string, anonKey: string) {
 }
 
 function buildHeaders(anonKey: string, extra?: Record<string, string>): Record<string, string> {
-  return {
+  const headers: Record<string, string> = {
     apikey: anonKey,
-    Authorization: `Bearer ${anonKey}`,
     "Content-Type": "application/json",
     ...extra,
   };
+  // 레거시 JWT(eyJ...) 키만 Authorization Bearer 헤더를 함께 전송 (신규 sb_publishable_ 키는 apikey 헤더만 사용)
+  if (anonKey.startsWith("eyJ")) {
+    headers.Authorization = `Bearer ${anonKey}`;
+  }
+  return headers;
 }
 
 export async function testSupabaseConnection(
@@ -86,7 +94,7 @@ export async function testSupabaseConnection(
   customKey?: string,
 ): Promise<{ ok: boolean; status: "성공" | "실패"; latencyMs: number; message: string }> {
   const cfg = getSupabaseConfig();
-  const url = (customUrl ?? cfg.url).trim().replace(/\/+$/, "");
+  const url = normalizeSupabaseUrl(customUrl ?? cfg.url);
   const key = (customKey ?? cfg.anonKey).trim();
 
   if (!url || !key) {
