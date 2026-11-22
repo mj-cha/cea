@@ -48,9 +48,9 @@ export function Hero() {
       />
       <div className="relative container grid items-center gap-10 pt-12 pb-16 sm:pt-16 sm:pb-20 md:pt-22 md:pb-26 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,1fr)] lg:gap-12">
         <div className="animate-fade-up break-keep">
-          <div className="mb-5 inline-flex flex-wrap items-center gap-2 rounded-full border border-primary/25 bg-primary/8 px-3.5 py-1.5 text-[13px] leading-snug font-bold text-primary">
-            <Check className="size-4 shrink-0 text-primary" />
-            <span>전환금융 · 기후 · RE100 · 택소노미 · 스타트업 ESG 전문 자문</span>
+          <div className="mb-5 inline-flex max-w-full items-center gap-1.5 rounded-full border border-primary/25 bg-primary/8 px-3 py-1.5 text-[11.5px] leading-tight font-bold text-primary sm:gap-2 sm:px-3.5 sm:text-[13px]">
+            <Check className="size-3.5 shrink-0 text-primary sm:size-4" />
+            <span className="break-keep">전환금융 · 기후 · RE100 · 택소노미 · 스타트업 ESG</span>
           </div>
 
           <p className="mb-3 text-[14px] font-bold text-foreground/80">

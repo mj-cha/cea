@@ -28,9 +28,8 @@ export function Logo({ className, onClick }: { className?: string; onClick?: () 
         width={32}
         height={32}
       />
-      <div className="flex flex-col leading-none">
-        <span className="text-[18px] font-extrabold tracking-[-0.02em]">CEA</span>
-        <span className="hidden text-[10px] font-medium tracking-tight text-muted-foreground 2xl:inline">
+      <div className="flex flex-col leading-tight">
+        <span className="text-[12.5px] font-extrabold tracking-[-0.02em] whitespace-nowrap text-foreground sm:text-[14px]">
           Corporate Ecosystem Advisory
         </span>
       </div>
