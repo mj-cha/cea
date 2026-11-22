@@ -28,7 +28,12 @@ create table if not exists public.cea_consult_requests (
 );
 alter table public.cea_consult_requests enable row level security;
 drop policy if exists "cea_consult_all" on public.cea_consult_requests;
-create policy "cea_consult_all" on public.cea_consult_requests for all using (true) with check (true);`;
+create policy "cea_consult_all" on public.cea_consult_requests for all using (true) with check (true);
+
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on public.cea_lms_store to anon, authenticated;
+grant select, insert, update, delete on public.cea_consult_requests to anon, authenticated;
+grant usage, select on all sequences in schema public to anon, authenticated;`;
 
 export interface SupabaseConnectionInfo {
   url: string;
