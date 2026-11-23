@@ -23,6 +23,17 @@ import {
   type PersistedLmsState,
   type SyncStatus,
 } from "@/lib/lms-sync";
+import {
+  consumeAuthCallbackFromHash,
+  getStoredAuthSession,
+  refreshSupabaseSession,
+  sendSupabasePasswordReset,
+  signInWithSupabasePassword,
+  signOutSupabase,
+  signUpWithSupabasePassword,
+  updateSupabasePassword,
+  type AuthActionResult,
+} from "@/lib/supabase-auth";
 import type {
   AdminAuditLog,
   AdminMember,
@@ -47,7 +58,15 @@ interface LmsContextValue extends PersistedLmsState {
   isAdminLoggedIn: boolean;
   loginModalOpen: boolean;
   setLoginModalOpen: (open: boolean) => void;
-  loginWithEmail: (email: string) => { ok: boolean; isAdmin: boolean; user?: UserAccount; message: string };
+  recoveryToken: string;
+  clearRecoveryToken: () => void;
+  loginWithPassword: (
+    email: string,
+    password: string,
+  ) => Promise<{ ok: boolean; isAdmin: boolean; user?: UserAccount; message: string }>;
+  setupFirstPassword: (email: string, password: string) => Promise<AuthActionResult>;
+  requestPasswordReset: (email: string) => Promise<AuthActionResult>;
+  completePasswordRecovery: (newPassword: string) => Promise<AuthActionResult>;
   logout: () => void;
   themeMode: "white" | "navy";
   setThemeMode: (mode: "white" | "navy") => void;
@@ -88,7 +107,8 @@ export function LmsProvider({ children }: { children: ReactNode }) {
   const [qnas, setQnas] = useState(initialQnAs);
   const [hostPlans] = useState(initialHostPlans);
   const [activeUserId, setActiveUserId] = useState(initialUsers[1]?.id ?? "usr-101");
-  const [loggedInEmail, setLoggedInEmail] = useState(() => localStorage.getItem(AUTH_STORAGE_KEY) || "");
+  const [loggedInEmail, setLoggedInEmail] = useState(() => getStoredAuthSession()?.user.email || "");
+  const [recoveryToken, setRecoveryToken] = useState("");
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [themeMode, setThemeMode] = useState<"white" | "navy">(() =>
     localStorage.getItem(THEME_STORAGE_KEY) === "navy" ? "navy" : "white",
@@ -112,32 +132,111 @@ export function LmsProvider({ children }: { children: ReactNode }) {
     applyPersisted,
   );
 
+  const resolveSignedInEmail = useCallback(
+    (cleanEmail: string) => {
+      const matchedUser = users.find((u) => u.email.toLowerCase() === cleanEmail);
+      const matchedAdmin = admins.find((a) => a.email.toLowerCase() === cleanEmail);
+      let userObj = matchedUser;
+      if (!userObj && matchedAdmin) {
+        userObj = users[0];
+      }
+      if (!userObj) {
+        const created: UserAccount = {
+          id: `usr-${Date.now().toString().slice(-4)}`,
+          email: cleanEmail,
+          name: cleanEmail.split("@")[0],
+          corpCode: "cea",
+          corpName: "주식회사 씨이에이(CEA)",
+          department: "외부 수강생",
+          role: "수강생",
+          joinedAt: nowDate(),
+          status: "활성",
+          enrolledCourseIds: [],
+          progress: {},
+          completedAt: {},
+          certNumbers: {},
+        };
+        setUsers((prev) => (prev.some((u) => u.email.toLowerCase() === cleanEmail) ? prev : [created, ...prev]));
+        userObj = created;
+      }
+      setLoggedInEmail(cleanEmail);
+      setActiveUserId(userObj.id);
+      setLoginModalOpen(false);
+      const adminFlag = Boolean(userObj.role === "관리자" || matchedAdmin);
+      return { userObj, adminFlag };
+    },
+    [admins, users],
+  );
+
+  useEffect(() => {
+    let active = true;
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    void (async () => {
+      const cb = await consumeAuthCallbackFromHash();
+      if (!active) return;
+      if (cb.type === "recovery" && cb.accessToken) {
+        setRecoveryToken(cb.accessToken);
+        setLoginModalOpen(true);
+        return;
+      }
+      if (cb.type === "signup" && cb.session) {
+        setLoggedInEmail(cb.session.user.email);
+        return;
+      }
+      const refreshed = await refreshSupabaseSession();
+      if (!active) return;
+      setLoggedInEmail(refreshed?.user.email || "");
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const loggedInUser = users.find((u) => u.email.toLowerCase() === loggedInEmail.toLowerCase()) ?? null;
   const isAdminLoggedIn = Boolean(
     loggedInUser?.role === "관리자" || admins.some((a) => a.email.toLowerCase() === loggedInEmail.toLowerCase()),
   );
 
-  const loginWithEmail: LmsContextValue["loginWithEmail"] = (email) => {
-    const clean = email.trim().toLowerCase();
-    const matchedUser = users.find((u) => u.email.toLowerCase() === clean);
-    const matchedAdmin = admins.find((a) => a.email.toLowerCase() === clean);
-    if (!matchedUser && !matchedAdmin) {
-      return { ok: false, isAdmin: false, message: "등록되지 않은 아이디입니다. 아래 예시 계정을 클릭해 주세요." };
+  const loginWithPassword: LmsContextValue["loginWithPassword"] = async (email, password) => {
+    const res = await signInWithSupabasePassword(email, password);
+    if (!res.ok || !res.session) {
+      return { ok: false, isAdmin: false, message: res.message };
     }
-    const userObj = matchedUser ?? users[0];
-    setLoggedInEmail(clean);
-    localStorage.setItem(AUTH_STORAGE_KEY, clean);
-    setActiveUserId(userObj.id);
-    setLoginModalOpen(false);
-    const adminFlag = Boolean(userObj.role === "관리자" || matchedAdmin);
+    const { userObj, adminFlag } = resolveSignedInEmail(res.session.user.email);
     window.location.hash = adminFlag ? "#admin" : "#lms";
     return { ok: true, isAdmin: adminFlag, user: userObj, message: `${userObj.name}님 로그인 완료` };
   };
 
+  const setupFirstPassword: LmsContextValue["setupFirstPassword"] = async (email, password) => {
+    const res = await signUpWithSupabasePassword(email, password);
+    if (res.ok && res.session) {
+      const { adminFlag } = resolveSignedInEmail(res.session.user.email);
+      window.location.hash = adminFlag ? "#admin" : "#lms";
+    }
+    return res;
+  };
+
+  const requestPasswordReset: LmsContextValue["requestPasswordReset"] = async (email) =>
+    sendSupabasePasswordReset(email);
+
+  const completePasswordRecovery: LmsContextValue["completePasswordRecovery"] = async (newPassword) => {
+    if (!recoveryToken) {
+      return { ok: false, message: "재설정 토큰이 만료되었습니다. 비밀번호 재설정 메일을 다시 요청해 주세요." };
+    }
+    const res = await updateSupabasePassword(recoveryToken, newPassword);
+    if (res.ok) setRecoveryToken("");
+    return res;
+  };
+
+  const clearRecoveryToken = () => setRecoveryToken("");
+
   const logout = () => {
+    void signOutSupabase();
     setLoggedInEmail("");
     localStorage.removeItem(AUTH_STORAGE_KEY);
-    if (window.location.hash.startsWith("#admin")) window.location.hash = "#top";
+    if (window.location.hash.startsWith("#admin") || window.location.hash.startsWith("#lms")) {
+      window.location.hash = "#top";
+    }
   };
 
   const addLog = (actionType: AdminAuditLog["actionType"], target: string, detail: string) => {
@@ -259,7 +358,8 @@ export function LmsProvider({ children }: { children: ReactNode }) {
       value: {
         courseMedia, corps, users, admins, auditLogs, subscriptions, payments, qnas, hostPlans,
         activeUserId, setActiveUserId, loggedInUser, isAdminLoggedIn, loginModalOpen, setLoginModalOpen,
-        loginWithEmail, logout, themeMode, setThemeMode, syncStatus, syncMessage, syncToCloud,
+        recoveryToken, clearRecoveryToken, loginWithPassword, setupFirstPassword, requestPasswordReset,
+        completePasswordRecovery, logout, themeMode, setThemeMode, syncStatus, syncMessage, syncToCloud,
         pullFromCloud, refreshSupabaseConfig, applyByCorpForm, bulkOpenCourses, updateProgress,
         updateCourseMedia, updateUserRole, toggleCorpAutoOpen, answerQnA, logBatchCertificatePrint, resetDemoData,
       },

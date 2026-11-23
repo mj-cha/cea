@@ -81,14 +81,32 @@ export function saveSupabaseRuntimeConfig(url: string, anonKey: string) {
   localStorage.setItem(RUNTIME_CONFIG_KEY, JSON.stringify({ url: cleanUrl, anonKey: cleanKey }));
 }
 
+function getActiveAuthBearerToken(): string {
+  try {
+    const raw = localStorage.getItem("cea_supabase_auth_session_v1");
+    if (!raw) return "";
+    const parsed = JSON.parse(raw) as { accessToken?: string; expiresAt?: number };
+    if (parsed.accessToken && (!parsed.expiresAt || parsed.expiresAt > Date.now())) {
+      return parsed.accessToken;
+    }
+  } catch {
+    // 무시
+  }
+  return "";
+}
+
 function buildHeaders(anonKey: string, extra?: Record<string, string>): Record<string, string> {
   const headers: Record<string, string> = {
     apikey: anonKey,
     "Content-Type": "application/json",
     ...extra,
   };
-  // 레거시 JWT(eyJ...) 키만 Authorization Bearer 헤더를 함께 전송 (신규 sb_publishable_ 키는 apikey 헤더만 사용)
-  if (anonKey.startsWith("eyJ")) {
+  // 로그인된 Supabase Auth 사용자 JWT가 있으면 최우선 전송 (PostgREST authenticated 역할 인식)
+  const userJwt = getActiveAuthBearerToken();
+  if (userJwt) {
+    headers.Authorization = `Bearer ${userJwt}`;
+  } else if (anonKey.startsWith("eyJ")) {
+    // 레거시 JWT(eyJ...) 키만 Authorization Bearer 헤더를 함께 전송 (신규 sb_publishable_ 키는 apikey 헤더만 사용)
     headers.Authorization = `Bearer ${anonKey}`;
   }
   return headers;
