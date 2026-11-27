@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { ArrowRight, Check, Play, ShieldCheck } from "lucide-react";
+import { ArrowRight, BookOpen, Check, Play, ShieldCheck } from "lucide-react";
+import { CourseDetailModal } from "@/components/course-detail-modal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { coreCourses, courses, esgDomains, hmcEcovadisCourses, levels } from "@/data/courses";
+import { coreCourses, courses, esgDomains, hmcEcovadisCourses, levels, type Course } from "@/data/courses";
 import { services } from "@/data/services";
 import { useService } from "@/lib/service-context";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,7 @@ export function Education() {
   const [track, setTrack] = useState<TrackTab>("all");
   const [levelFilter, setLevelFilter] = useState("전체");
   const [domainFilter, setDomainFilter] = useState("전체");
+  const [detailCourse, setDetailCourse] = useState<Course | null>(null);
   const { select, requestConsult } = useService();
 
   const baseList = track === "core" ? coreCourses : track === "hmc-ecovadis" ? hmcEcovadisCourses : courses;
@@ -191,24 +193,34 @@ export function Education() {
                 <p className="text-[13px] font-semibold text-foreground/85">{c.format}</p>
                 <p className="text-[13px] leading-[1.65] text-muted-foreground">대상 · {c.audience}</p>
                 <div className="mt-1.5 flex w-full flex-wrap items-center justify-between gap-2 pt-1">
-                  <a
-                    href="#services"
-                    onClick={() => select(c.service)}
-                    className="inline-flex min-h-11 items-center gap-1 text-[13px] font-semibold text-foreground transition-colors hover:text-primary"
+                  <button
+                    type="button"
+                    onClick={() => setDetailCourse(c)}
+                    className="inline-flex min-h-11 items-center gap-1.5 text-[13px] font-bold text-foreground transition-colors hover:text-primary"
                   >
-                    <Badge variant="outline" className="mr-1 px-1.5 py-0 text-[10px]">
-                      연계
-                    </Badge>
-                    {serviceName(c.service)}
-                  </a>
-                  <a
-                    href="#contact"
-                    onClick={() => requestConsult(c.track === "hmc-ecovadis" ? `HMC·EcoVadis 교육 (${c.title})` : "온라인 교육")}
-                    className="inline-flex min-h-11 items-center gap-1 text-[13px] font-bold text-primary hover:underline"
-                  >
-                    수강 문의
-                    <ArrowRight className="size-3.5" />
-                  </a>
+                    <BookOpen className="size-3.5 text-primary" />
+                    상세 커리큘럼
+                  </button>
+                  <div className="flex items-center gap-3">
+                    <a
+                      href="#services"
+                      onClick={() => select(c.service)}
+                      className="inline-flex min-h-11 items-center gap-1 text-[12px] font-semibold text-muted-foreground transition-colors hover:text-primary"
+                    >
+                      <Badge variant="outline" className="px-1.5 py-0 text-[10px]">
+                        연계
+                      </Badge>
+                      {serviceName(c.service)}
+                    </a>
+                    <a
+                      href="#contact"
+                      onClick={() => requestConsult(c.track === "hmc-ecovadis" ? `HMC·EcoVadis 교육 (${c.title})` : "온라인 교육")}
+                      className="inline-flex min-h-11 items-center gap-1 text-[13px] font-bold text-primary hover:underline"
+                    >
+                      수강 문의
+                      <ArrowRight className="size-3.5" />
+                    </a>
+                  </div>
                 </div>
               </CardFooter>
             </Card>
@@ -227,6 +239,11 @@ export function Education() {
           로 알려 주세요.
         </p>
       </div>
+      <CourseDetailModal
+        course={detailCourse}
+        onClose={() => setDetailCourse(null)}
+        onConsult={requestConsult}
+      />
     </section>
   );
 }
