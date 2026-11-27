@@ -16,10 +16,11 @@ create policy "cea_lms_store_public_read"
   using (true);
 
 drop policy if exists "cea_lms_store_public_write" on public.cea_lms_store;
-create policy "cea_lms_store_public_write"
+drop policy if exists "cea_lms_store_auth_write" on public.cea_lms_store;
+create policy "cea_lms_store_auth_write"
   on public.cea_lms_store for all
-  using (true)
-  with check (true);
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
 
 -- 2. 홈페이지 ESG 컨설팅 · 기업 교육 상담 신청 접수 테이블
 create table if not exists public.cea_consult_requests (
@@ -29,6 +30,8 @@ create table if not exists public.cea_consult_requests (
   email text not null,
   interests text[] not null default '{}',
   message text not null default '',
+  privacy_agreed boolean not null default true,
+  privacy_agreed_at timestamptz not null default now(),
   created_at timestamptz not null default now()
 );
 
@@ -40,6 +43,7 @@ create policy "cea_consult_requests_insert"
   with check (true);
 
 drop policy if exists "cea_consult_requests_select" on public.cea_consult_requests;
-create policy "cea_consult_requests_select"
+drop policy if exists "cea_consult_requests_select_auth" on public.cea_consult_requests;
+create policy "cea_consult_requests_select_auth"
   on public.cea_consult_requests for select
-  using (true);
+  using (auth.role() = 'authenticated');

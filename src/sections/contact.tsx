@@ -39,6 +39,9 @@ export function Contact() {
   const [picked, setPicked] = useState<string[]>([]);
   const [state, setState] = useState<"idle" | "sent" | "copied" | "db_saved">("idle");
   const [emailErr, setEmailErr] = useState("");
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [privacyErr, setPrivacyErr] = useState("");
   const [kakaoInfo, setKakaoInfo] = useState(false);
   const [lastSummary, setLastSummary] = useState("");
 
@@ -53,11 +56,17 @@ export function Contact() {
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setEmailErr("");
+    setPrivacyErr("");
     const f = new FormData(e.currentTarget);
     const company = String(f.get("company") ?? "").trim();
     const managerName = String(f.get("name") ?? "").trim();
     const email = String(f.get("email") ?? "").trim();
     const message = String(f.get("message") ?? "").trim();
+
+    if (!privacyAgreed) {
+      setPrivacyErr("개인정보 수집·이용에 동의해 주셔야 상담 신청이 접수됩니다.");
+      return;
+    }
 
     if (isPersonalEmail(email)) {
       setEmailErr("개인 무료 메일(네이버·지메일·카카오 등)은 접수되지 않습니다. 소속 기업·기관의 업무용 이메일 주소를 입력해 주세요.");
@@ -214,7 +223,43 @@ export function Contact() {
               />
             </div>
           </div>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-5 rounded-xl border bg-muted/20 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <label className="flex cursor-pointer items-center gap-2.5 text-[13.5px] font-semibold text-foreground">
+                <input
+                  type="checkbox"
+                  checked={privacyAgreed}
+                  onChange={(e) => {
+                    setPrivacyAgreed(e.target.checked);
+                    if (e.target.checked) setPrivacyErr("");
+                  }}
+                  className="size-4 accent-primary"
+                />
+                <span>[필수] 상담 접수를 위한 개인정보 수집·이용에 동의합니다.</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setPrivacyOpen((v) => !v)}
+                className="text-xs font-semibold text-primary underline underline-offset-2"
+              >
+                {privacyOpen ? "내용 닫기" : "수집 항목 보기"}
+              </button>
+            </div>
+            {privacyOpen && (
+              <div className="mt-3 space-y-1 border-t pt-3 text-xs leading-relaxed text-muted-foreground">
+                <p>• 수집 항목: 회사·기관명, 담당자 성함·직함, 업무용 이메일, 관심 분야, 문의 내용</p>
+                <p>• 이용 목적: ESG 컨설팅·기업 교육 상담 회신 및 견적 안내</p>
+                <p>• 보관 기간: 상담 완료 후 1년(삭제 요청 시 즉시 파기)</p>
+                <p>• 동의를 거부할 권리가 있으나, 미동의 시 온라인 상담 접수가 제한됩니다.</p>
+              </div>
+            )}
+            {privacyErr && (
+              <p role="alert" className="mt-2 text-xs font-bold text-destructive">
+                {privacyErr}
+              </p>
+            )}
+          </div>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-[12px] text-muted-foreground">입력하신 기업 정보는 상담 회신 목적으로만 사용합니다.</p>
             <Button type="submit" className="h-12 gap-2 px-6 text-[15px] font-semibold">
               상담 신청하기

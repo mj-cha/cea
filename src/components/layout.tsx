@@ -278,6 +278,8 @@ export function QA({
 }
 
 export function Footer({ onNavigate }: { onNavigate?: (hash: string) => void }) {
+  const [policyModal, setPolicyModal] = useState<"privacy" | "terms" | null>(null);
+
   return (
     <footer className="border-t bg-muted/10">
       <div className="container flex flex-col gap-8 py-12 md:flex-row md:items-end md:justify-between">
@@ -310,12 +312,68 @@ export function Footer({ onNavigate }: { onNavigate?: (hash: string) => void }) 
               상담 신청
             </a>
           </nav>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+            <button
+              type="button"
+              onClick={() => setPolicyModal("privacy")}
+              className="font-bold text-foreground underline-offset-2 hover:underline"
+            >
+              개인정보처리방침
+            </button>
+            <button
+              type="button"
+              onClick={() => setPolicyModal("terms")}
+              className="text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+            >
+              이용약관
+            </button>
+          </div>
           <p className="text-xs leading-relaxed break-keep">
             주식회사 씨이에이(CEA) · 공식 홈페이지 www.cea.co.kr
             <br />© {new Date().getFullYear()} Corporate Ecosystem Advisory. All rights reserved.
           </p>
         </div>
       </div>
+
+      {policyModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label={policyModal === "privacy" ? "개인정보처리방침" : "이용약관"}
+          onClick={() => setPolicyModal(null)}
+        >
+          <div
+            className="max-h-[82vh] w-full max-w-xl overflow-y-auto rounded-2xl border bg-background p-6 text-left shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between border-b pb-3">
+              <h3 className="text-lg font-extrabold text-foreground">
+                {policyModal === "privacy" ? "개인정보처리방침" : "서비스 이용약관"}
+              </h3>
+              <Button type="button" variant="ghost" size="icon" onClick={() => setPolicyModal(null)} aria-label="닫기">
+                <X className="size-4" />
+              </Button>
+            </div>
+            {policyModal === "privacy" ? (
+              <div className="space-y-3 text-xs leading-relaxed text-muted-foreground">
+                <p className="font-semibold text-foreground">주식회사 씨이에이(CEA)는 실제 서비스 운영에 필요한 최소한의 개인정보만 수집·이용합니다.</p>
+                <p><strong>1. 수집 항목 및 목적</strong><br />• 상담 신청: 회사·기관명, 담당자 성함·직함, 업무용 이메일, 관심 분야, 문의 내용 (상담 회신 및 견적 안내)<br />• 온라인 교육(LMS): 성명, 소속 법인, 업무용 이메일, 수강 진도율 및 수료증 번호 (교육 운영, 수료증 발급 및 진위 확인)</p>
+                <p><strong>2. 보관 및 파기</strong><br />• 상담 기록은 상담 완료 후 1년 보관 후 지체 없이 파기합니다.<br />• 법정 교육 수료 기록 및 세법상 거래 기록은 관련 법령이 정한 기간 동안 분리 보관하며, 이용자가 탈퇴·삭제를 요청할 경우 개인 식별 정보를 즉시 익명화 또는 파기합니다.</p>
+                <p><strong>3. 접근 통제 및 보안</strong><br />• 수집된 상담 및 교육 데이터는 권한이 부여된 관리자만 열람할 수 있도록 데이터베이스 행 단위 접근 통제(RLS)를 적용합니다.</p>
+                <p><strong>4. 개인정보 보호책임자 및 문의</strong><br />• 담당: 주식회사 씨이에이 운영팀 (contact@cea.co.kr)</p>
+              </div>
+            ) : (
+              <div className="space-y-3 text-xs leading-relaxed text-muted-foreground">
+                <p><strong>1. 목적</strong><br />이 약관은 주식회사 씨이에이(CEA)가 제공하는 ESG 컨설팅 상담 및 온라인 교육(LMS) 서비스의 이용 조건과 권리·의무를 규정합니다.</p>
+                <p><strong>2. 계정 관리 및 금지 행위</strong><br />• 수강생 계정은 발급받은 본인만 사용할 수 있으며, 타인 양도·무단 복제·교육 영상 무단 배포를 금지합니다.<br />• 허위 정보 입력, 시스템 비정상 접근, 서비스 운영 방해 시 사전 안내 후 이용을 제한하거나 계정을 정지할 수 있습니다.</p>
+                <p><strong>3. 지식재산권</strong><br />• 사이트 및 온라인 교육 과정의 모든 강의 자료와 문서는 씨이에이에 귀속되며, 사전 서면 동의 없이 상업적 재배포를 금합니다.</p>
+                <p><strong>4. 문의 및 탈퇴</strong><br />• 서비스 이용 중 계정 탈퇴나 데이터 삭제를 원할 경우 공식 이메일(contact@cea.co.kr) 또는 관리자 문의를 통해 즉시 처리할 수 있습니다.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </footer>
   );
 }
