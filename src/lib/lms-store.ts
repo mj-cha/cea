@@ -18,6 +18,8 @@ import {
   computeUpdatedUserProgress,
   createAuditLog,
   mergeBulkOpenUsers,
+  mergeSeedCorps,
+  mergeSeedCourseMedia,
   nowDate,
   useLmsCloudSync,
   type PersistedLmsState,
@@ -120,8 +122,8 @@ export function LmsProvider({ children }: { children: ReactNode }) {
   }, [themeMode]);
 
   const applyPersisted = useCallback((parsed: Partial<PersistedLmsState>) => {
-    if (parsed.courseMedia?.length) setCourseMedia(parsed.courseMedia);
-    if (parsed.corps?.length) setCorps(parsed.corps);
+    if (parsed.courseMedia?.length) setCourseMedia(mergeSeedCourseMedia(parsed.courseMedia, initialCourseMedia));
+    if (parsed.corps?.length) setCorps(mergeSeedCorps(parsed.corps, initialCorps));
     if (parsed.users?.length) setUsers(parsed.users);
     if (parsed.auditLogs?.length) setAuditLogs(parsed.auditLogs);
     if (parsed.qnas?.length) setQnas(parsed.qnas);

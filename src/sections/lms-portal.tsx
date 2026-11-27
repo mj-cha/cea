@@ -62,6 +62,9 @@ export function LmsPortal({
         durationMin: currentCourse.durationMin,
         progress: currentProgress,
         completedAt: activeUser.completedAt[cid] ?? new Date().toISOString().slice(0, 10),
+        esgDomain: currentCourse.esgDomain,
+        hmcCode: currentCourse.hmcCode,
+        ecovadisCode: currentCourse.ecovadisCode,
       },
     ]);
   };
@@ -164,6 +167,20 @@ export function LmsPortal({
                         </span>
                       </div>
                       <p className="text-sm font-bold">{m.title}</p>
+                      {(m.hmcCode || m.ecovadisCode) && (
+                        <div className="mt-1.5 flex flex-wrap gap-1">
+                          {m.hmcCode && (
+                            <Badge variant="secondary" className="font-mono text-[10px]">
+                              HMC {m.hmcCode}
+                            </Badge>
+                          )}
+                          {m.ecovadisCode && (
+                            <Badge variant="secondary" className="font-mono text-[10px]">
+                              EcoVadis {m.ecovadisCode}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                       <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
                         <div className="h-full bg-primary transition-all duration-300" style={{ width: `${pct}%` }} />
                       </div>

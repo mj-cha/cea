@@ -27,6 +27,21 @@ export function LmsCoursePlayer({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <Badge className="bg-primary/15 text-primary">{course.level} 과정</Badge>
+            {course.esgDomain && (
+              <Badge variant="outline" className="text-xs font-semibold">
+                {course.esgDomain}
+              </Badge>
+            )}
+            {course.hmcCode && (
+              <Badge variant="secondary" className="font-mono text-xs font-semibold">
+                HMC {course.hmcCode}
+              </Badge>
+            )}
+            {course.ecovadisCode && (
+              <Badge variant="secondary" className="font-mono text-xs font-semibold">
+                EcoVadis {course.ecovadisCode}
+              </Badge>
+            )}
             <span className="text-xs text-muted-foreground">
               수료 기준: 진도율 {course.passRate}% 이상 · 총 {course.durationMin}분
             </span>

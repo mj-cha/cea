@@ -1,4 +1,4 @@
-import { courses } from "@/data/courses";
+import { courses, hmcEcovadisCourseIds } from "@/data/courses";
 import type {
   AdminAuditLog,
   AdminMember,
@@ -13,9 +13,15 @@ import type {
 
 export const initialCourseMedia: CourseMediaConfig[] = courses.map((c, idx) => ({
   courseId: c.id,
+  track: c.track ?? "core",
   title: c.title,
   level: c.level,
-  durationMin: [90, 120, 105, 110, 95, 100, 80, 90][idx] ?? 90,
+  esgDomain: c.esgDomain,
+  topic: c.topic,
+  hmcCode: c.hmcCode,
+  ecovadisCode: c.ecovadisCode,
+  priority: c.priority,
+  durationMin: c.durationMin ?? [90, 120, 105, 110, 95, 100, 80, 90][idx] ?? 50,
   passRate: 80,
   videoSourceType: idx % 3 === 0 ? "youtube" : idx % 3 === 1 ? "vimeo" : "mp4",
   videoUrl:
@@ -25,7 +31,7 @@ export const initialCourseMedia: CourseMediaConfig[] = courses.map((c, idx) => (
         ? "https://player.vimeo.com/video/76979871?h=8272103f6e"
         : "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
   driveMaterialUrl: `https://drive.google.com/drive/folders/cea-esg-${c.id}`,
-  updatedAt: "2026-11-20",
+  updatedAt: c.track === "hmc-ecovadis" ? "2026-11-27" : "2026-11-20",
 }));
 
 export const initialCorps: CorpEntity[] = [
@@ -40,16 +46,7 @@ export const initialCorps: CorpEntity[] = [
     planName: "CEA 본사 · 전 과정 마스터",
     seatLimit: 100,
     enrolledCount: 24,
-    allowedCourseIds: [
-      "board-valueup",
-      "rating-upgrade",
-      "startup-esg-course",
-      "ghg-scope3",
-      "issb-kssb",
-      "supply-chain-dd",
-      "esg-101",
-      "report-writing",
-    ],
+    allowedCourseIds: courses.map((c) => c.id),
     autoOpenEnabled: true,
     integrationStatus: "연동 정상",
     contractPeriod: "2026.01.01 ~ 2099.12.31",
@@ -86,6 +83,22 @@ export const initialCorps: CorpEntity[] = [
     integrationStatus: "연동 정상",
     contractPeriod: "2026.03.01 ~ 2027.02.28",
   },
+  {
+    id: "corp-4",
+    code: "hmc-partner",
+    name: "현대차·EcoVadis 협력사 필수 교육 트랙",
+    bizNo: "101-86-00001",
+    managerName: "CEA 공급망ESG팀",
+    managerEmail: "edu@cea.co.kr",
+    managerPhone: "02-6950-0003",
+    planName: "HMC·EcoVadis 2026 필수 12개 과정 패키지",
+    seatLimit: 200,
+    enrolledCount: 12,
+    allowedCourseIds: [...hmcEcovadisCourseIds],
+    autoOpenEnabled: true,
+    integrationStatus: "연동 정상",
+    contractPeriod: "2026.01.01 ~ 2026.12.31",
+  },
 ];
 
 export const initialUsers: UserAccount[] = [
@@ -99,19 +112,21 @@ export const initialUsers: UserAccount[] = [
     role: "관리자",
     joinedAt: "2026-01-02",
     status: "활성",
-    enrolledCourseIds: ["board-valueup", "rating-upgrade", "startup-esg-course", "ghg-scope3"],
-    progress: { "board-valueup": 100, "rating-upgrade": 100, "startup-esg-course": 100, "ghg-scope3": 100 },
+    enrolledCourseIds: ["board-valueup", "rating-upgrade", "startup-esg-course", "ghg-scope3", "hmc-soc-supplier-hr-env", "hmc-env-energy"],
+    progress: { "board-valueup": 100, "rating-upgrade": 100, "startup-esg-course": 100, "ghg-scope3": 100, "hmc-soc-supplier-hr-env": 100, "hmc-env-energy": 60 },
     completedAt: {
       "board-valueup": "2026-10-12",
       "rating-upgrade": "2026-10-25",
       "startup-esg-course": "2026-11-08",
       "ghg-scope3": "2026-11-15",
+      "hmc-soc-supplier-hr-env": "2026-11-27",
     },
     certNumbers: {
       "board-valueup": "CEA-2026-1001",
       "rating-upgrade": "CEA-2026-1002",
       "startup-esg-course": "CEA-2026-1003",
       "ghg-scope3": "CEA-2026-1004",
+      "hmc-soc-supplier-hr-env": "CEA-2026-2007",
     },
   },
   {
@@ -405,7 +420,7 @@ export const initialHostPlans: HostPlanStatus[] = [
     provider: "YouTube (일부공개) + Vimeo",
     planName: "YouTube 무료 스트리밍 / Vimeo Starter 병행",
     monthlyCost: "0원 (유튜브 기준)",
-    usageSummary: "등록 과정 8개 (IFrame API 진도율 초 단위 추적)",
+    usageSummary: "등록 과정 20개 (직무 8 · HMC·EcoVadis 12)",
     usagePercent: 22,
     status: "정상",
     note: "강의 녹화 MP4를 일부공개로 올려 트래픽 비용 0원으로 진도율 체크",

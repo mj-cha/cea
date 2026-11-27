@@ -12,6 +12,9 @@ export interface CertificatePrintItem {
   durationMin: number;
   progress: number;
   completedAt: string;
+  esgDomain?: string;
+  hmcCode?: string;
+  ecovadisCode?: string;
 }
 
 export function CertificateBatchModal({
@@ -138,6 +141,20 @@ export function CertificateBatchModal({
                   <dt className="text-xs font-semibold text-slate-500 sm:text-sm">이수 교육과정</dt>
                   <dd className="font-bold break-keep text-blue-900 sm:col-span-2">{item.courseTitle}</dd>
                 </div>
+                {(item.hmcCode || item.ecovadisCode) && (
+                  <div className="grid grid-cols-1 gap-1 border-b border-slate-200/80 pb-2.5 sm:grid-cols-3 sm:gap-2">
+                    <dt className="text-xs font-semibold text-slate-500 sm:text-sm">평가 증빙 코드</dt>
+                    <dd className="font-mono font-bold break-keep text-slate-900 sm:col-span-2">
+                      {[
+                        item.hmcCode ? `HMC 문항 ${item.hmcCode}` : null,
+                        item.ecovadisCode ? `EcoVadis ${item.ecovadisCode}` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                      {item.esgDomain ? ` (${item.esgDomain})` : ""}
+                    </dd>
+                  </div>
+                )}
                 <div className="grid grid-cols-1 gap-1 sm:grid-cols-3 sm:gap-2">
                   <dt className="text-xs font-semibold text-slate-500 sm:text-sm">인정 시간 · 진도율</dt>
                   <dd className="font-semibold break-keep text-slate-800 sm:col-span-2">

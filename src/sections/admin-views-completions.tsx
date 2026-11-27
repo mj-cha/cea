@@ -37,6 +37,9 @@ export function AdminViewsCompletions({ menu }: { menu: AdminMenuId }) {
           durationMin: cm?.durationMin ?? 90,
           progress: pct,
           completedAt: u.completedAt[cid] ?? "학습중",
+          esgDomain: cm?.esgDomain,
+          hmcCode: cm?.hmcCode,
+          ecovadisCode: cm?.ecovadisCode,
         });
       }
     }

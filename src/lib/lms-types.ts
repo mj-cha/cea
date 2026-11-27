@@ -1,12 +1,18 @@
-import type { Level } from "@/data/courses";
+import type { CoursePriority, CourseTrack, EsgDomain, Level } from "@/data/courses";
 
 /** 강의 영상 제공 방식: 유튜브 일부공개 / Vimeo / MP4 직접 업로드 */
 export type VideoSourceType = "youtube" | "vimeo" | "mp4";
 
 export interface CourseMediaConfig {
   courseId: string;
+  track?: CourseTrack;
   title: string;
   level: Level;
+  esgDomain?: EsgDomain;
+  topic?: string;
+  hmcCode?: string;
+  ecovadisCode?: string;
+  priority?: CoursePriority;
   durationMin: number;
   passRate: number; // 수료 기준 학습률 (예: 80%)
   videoSourceType: VideoSourceType;

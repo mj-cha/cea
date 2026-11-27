@@ -110,6 +110,46 @@ export function computeUpdatedUserProgress(
   });
 }
 
+export function mergeSeedCourseMedia(
+  saved: CourseMediaConfig[],
+  seed: CourseMediaConfig[],
+): CourseMediaConfig[] {
+  const seedMap = new Map(seed.map((s) => [s.courseId, s]));
+  const seen = new Set<string>();
+  const merged = saved.map((item) => {
+    seen.add(item.courseId);
+    const meta = seedMap.get(item.courseId);
+    if (!meta) return item;
+    return {
+      ...item,
+      track: meta.track,
+      esgDomain: meta.esgDomain,
+      topic: meta.topic,
+      hmcCode: meta.hmcCode,
+      ecovadisCode: meta.ecovadisCode,
+      priority: meta.priority,
+    };
+  });
+  for (const s of seed) {
+    if (!seen.has(s.courseId)) merged.push(s);
+  }
+  return merged;
+}
+
+export function mergeSeedCorps(saved: CorpEntity[], seed: CorpEntity[]): CorpEntity[] {
+  const existingCodes = new Set(saved.map((c) => c.code));
+  const masterSeed = seed.find((c) => c.code === "cea");
+  const updated = saved.map((c) =>
+    c.code === "cea" && masterSeed
+      ? { ...c, allowedCourseIds: Array.from(new Set([...c.allowedCourseIds, ...masterSeed.allowedCourseIds])) }
+      : c,
+  );
+  for (const s of seed) {
+    if (!existingCodes.has(s.code)) updated.push(s);
+  }
+  return updated;
+}
+
 export function useLmsCloudSync(
   state: PersistedLmsState,
   onHydrate: (parsed: Partial<PersistedLmsState>) => void,

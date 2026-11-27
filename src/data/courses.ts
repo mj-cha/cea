@@ -1,8 +1,14 @@
 // 온라인 교육 과정 — 최상단 1~4번에 ① RE100·PPA·전환금융, ② K-택소노미·ESG 투자 전략, ③ 스타트업·환경벤처 ESG 경영·투자유치, ④ Scope 1~3 탄소회계·PCF(CBAM) 전면 배치
+import { hmcEcovadisCourses, hmcEcovadisCourseIds } from "@/data/courses-hmc-ecovadis";
 
 export type Level = "입문" | "실무" | "심화";
+export type CourseTrack = "core" | "hmc-ecovadis";
+export type EsgDomain = "환경(E)" | "사회(S)" | "거버넌스(G)";
+export type CoursePriority = "최우선" | "우선" | "정규" | "시범";
+
 export type Course = {
   id: string;
+  track?: CourseTrack;
   level: Level;
   title: string;
   desc: string;
@@ -10,11 +16,18 @@ export type Course = {
   audience: string;
   outcomes: string[];
   service: string; // services.ts의 id
+  durationMin?: number;
+  esgDomain?: EsgDomain;
+  topic?: string;
+  hmcCode?: string;
+  ecovadisCode?: string;
+  priority?: CoursePriority;
 };
 
 export const levels: Level[] = ["입문", "실무", "심화"];
+export const esgDomains: EsgDomain[] = ["환경(E)", "사회(S)", "거버넌스(G)"];
 
-export const courses: Course[] = [
+export const coreCourses: Course[] = [
   {
     id: "board-valueup",
     level: "실무",
@@ -96,3 +109,10 @@ export const courses: Course[] = [
     service: "disclosure",
   },
 ];
+
+export const courses: Course[] = [
+  ...coreCourses.map((c) => ({ ...c, track: "core" as const })),
+  ...hmcEcovadisCourses,
+];
+
+export { hmcEcovadisCourses, hmcEcovadisCourseIds };
